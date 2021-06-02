@@ -6,11 +6,12 @@ namespace Temple.Utils
     [Serializable]
     public class RangedFloatValue : FloatValue
     {
-        private RangedFloatValue _leader;
-
         [SerializeField] private Range _range = new Range();
 
-        public Range range => _range;
+        public Range Range => _range;
+
+        private RangedFloatValue _leader;
+
 
         public RangedFloatValue(float value = 0.0f, float boundary1 = 0.0f, float boundary2 = 1.0f) : base(value)
         {
@@ -29,13 +30,13 @@ namespace Temple.Utils
         {
             set
             {
-                base.value = range.Clamp(value);
+                base.value = Range.Clamp(value);
             }
         }
 
         private void OnLeaderValueChanged(float newValue, float oldValue)
         {
-            value = _leader.range.Translate(newValue, range);
+            value = _leader.Range.Translate(newValue, Range);
         }
 
         public void ClearBounds()

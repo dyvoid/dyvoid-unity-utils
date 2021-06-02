@@ -33,12 +33,15 @@ namespace Temple.Utils
             this.Time = Random.Range(min, max);
         }
 
+        /**
+         * Returns true when the cooldown has expired
+         */
         public bool Update(float deltaTime)
         {
             return IsEnabled && ((Time -= deltaTime) <= 0);
         }
 
-        public bool isExpired
+        public bool hasExpired
         {
             get { return (IsEnabled && Time <= 0); }
         }
