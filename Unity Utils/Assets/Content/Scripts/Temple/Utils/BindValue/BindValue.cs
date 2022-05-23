@@ -17,7 +17,7 @@ namespace Temple.Utils
             this._value = value;
         }
 
-        public virtual T value
+        public virtual T Value
         {
             get { return _value; }
             set
@@ -34,15 +34,15 @@ namespace Temple.Utils
         public BindValue<T2> Map<T2>(Func<T, T, T2> handler)
         {
             BindValue<T2> mappedValue = new BindValue<T2>(handler.Invoke(_value, _value));
-            Subscribe((to, from) => mappedValue.value = handler.Invoke(to, from), true);
+            Subscribe((to, from) => mappedValue.Value = handler.Invoke(to, from), true);
             return mappedValue;
         }
 
         public static BindValue<T3> Merge<T1, T2, T3>(BindValue<T1> value1, BindValue<T2> value2, Func<T1, T2, T3> combinator)
         {
-            BindValue<T3> c = new BindValue<T3>(combinator.Invoke(value1.value, value2.value));
-            value1.Subscribe((to, from) => c.value = combinator.Invoke(to, value2.value), true);
-            value2.Subscribe((to, from) => c.value = combinator.Invoke(value1.value, to), true);
+            BindValue<T3> c = new BindValue<T3>(combinator.Invoke(value1.Value, value2.Value));
+            value1.Subscribe((to, from) => c.Value = combinator.Invoke(to, value2.Value), true);
+            value2.Subscribe((to, from) => c.Value = combinator.Invoke(value1.Value, to), true);
             return c;
         }
 

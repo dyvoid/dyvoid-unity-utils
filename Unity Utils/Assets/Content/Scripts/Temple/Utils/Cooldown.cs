@@ -4,33 +4,36 @@ namespace Temple.Utils
 {
     public class Cooldown
     {
-        public float DefaultTime;
+        public float DefaultDuration;
         public float Time { get; private set; }
 
         public bool IsEnabled = true;
 
-        public Cooldown(float defaultTime = 1.0f)
+        public bool HasExpired => (IsEnabled && Time <= 0);
+
+
+        public Cooldown(float defaultDuration = 1.0f)
         {
-            this.DefaultTime = defaultTime;
-            this.Time = defaultTime;
+            this.DefaultDuration = defaultDuration;
+            this.Time = defaultDuration;
         }
 
         public void Reset()
         {
-            Reset(DefaultTime);
+            Reset(DefaultDuration);
         }
 
-        public void Reset(float time)
+        public void Reset(float duration)
         {
-            this.Time = time;
+            this.Time = duration;
         }
 
         /**
-         * Reset to a random value between min and mx
+         * Reset to a random value between min and max
          */
-        public void Reset(float min, float max)
+        public void Reset(float minDuration, float maxDuration)
         {
-            this.Time = Random.Range(min, max);
+            this.Time = Random.Range(minDuration, maxDuration);
         }
 
         /**
@@ -39,11 +42,6 @@ namespace Temple.Utils
         public bool Update(float deltaTime)
         {
             return IsEnabled && ((Time -= deltaTime) <= 0);
-        }
-
-        public bool hasExpired
-        {
-            get { return (IsEnabled && Time <= 0); }
         }
     }
 }

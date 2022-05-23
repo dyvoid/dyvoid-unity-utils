@@ -1,6 +1,10 @@
 ﻿using System;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace Temple.Utils
 {
     [Serializable]
@@ -23,20 +27,20 @@ namespace Temple.Utils
             _range.Set(boundary1, boundary2);
             // Yes really. Range/modifiers may cause value to change, so we trigger
             // the range/modifiers by using the value setter.
-            value = value;
+            Value = Value;
         }
 
-        public override float value
+        public override float Value
         {
             set
             {
-                base.value = Range.Clamp(value);
+                base.Value = Range.Clamp(value);
             }
         }
 
         private void OnLeaderValueChanged(float newValue, float oldValue)
         {
-            value = _leader.Range.Translate(newValue, Range);
+            Value = _leader.Range.Translate(newValue, Range);
         }
 
         public void ClearBounds()
@@ -76,4 +80,51 @@ namespace Temple.Utils
 
 
     }
+
+#if UNITY_EDITOR
+    [CustomPropertyDrawer(typeof(RangedFloatValue))]
+    public class RangedFloatValueDrawer : PropertyDrawer
+    {
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            EditorGUI.BeginProperty(position, label, property);
+
+            // Get position
+            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+
+            // Don't make child fields be indented
+            var indent = EditorGUI.indentLevel;
+            EditorGUI.indentLevel = 0;
+
+            float lineHeight = 17f;
+
+            // Calculate rects
+            var valueRect = new Rect(position.x, position.y, position.width, lineHeight);
+            var fromRect = new Rect(position.x, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
+            var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + 2, position.width * 0.5f, lineHeight);
+            var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
+
+            SerializedProperty valueProperty = property.FindPropertyRelative("_value");
+            SerializedProperty fromProperty = property.FindPropertyRelative("_range").FindPropertyRelative("_from");
+            SerializedProperty toProperty = property.FindPropertyRelative("_range").FindPropertyRelative("_to");
+
+            // Draw fields - pass GUIContent.none to each so they are drawn without labels
+            EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
+
+            EditorGUI.PropertyField(fromRect, fromProperty, GUIContent.none);
+            valueProperty.floatValue = GUI.HorizontalSlider(rangeRect, valueProperty.floatValue, fromProperty.floatValue, toProperty.floatValue);
+            EditorGUI.PropertyField(toRect, toProperty, GUIContent.none);
+
+            // Set indent back to what it was
+            EditorGUI.indentLevel = indent;
+
+            EditorGUI.EndProperty();
+        }
+
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        {
+            return 36.0f;
+        }
+    }
+#endif
 }
