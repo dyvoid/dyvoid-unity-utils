@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.mediamonks.editortools": {
+      "version": "file:../LocalPackages/com.mediamonks.editortools",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
+    "com.mediamonks.references": {
+      "version": "file:../LocalPackages/com.mediamonks.references",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.textmeshpro": ""
+      }
+    },
     "com.unity.collab-proxy": {
       "version": "1.15.16",
       "depth": 0,

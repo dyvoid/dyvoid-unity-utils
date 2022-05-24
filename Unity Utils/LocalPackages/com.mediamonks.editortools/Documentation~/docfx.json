@@ -1,0 +1,68 @@
+{
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../",
+          "files": [
+            "Runtime/**.cs",
+            "Editor/**.cs"
+          ]
+        }
+      ],
+      "dest": "api",
+      "shouldSkipMarkup": true,
+      "properties": {
+        "TargetFramework": "netstandard2.0"
+      }
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "api/**.yml",
+          "api/index.md"
+        ]
+      },
+      {
+        "files": [
+          "manual/**.md",
+          "manual/**/toc.yml",
+          "**.md",
+          "toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**",
+          "favicon.ico"
+        ]
+      }
+    ],
+    "overwrite": [
+      {
+        "files": [
+          "api/**.md"
+        ],
+        "exclude": [
+          "obj/**",
+          "_site/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadata": {
+      "_enableSearch": "true",
+      "_appLogoPath": "images/logo-mm.png",
+      "_appFavIconPath": "favicon.ico"
+    },
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "postProcessors": ["ExtractSearchIndex"],
+    "noLangKeyword": false,
+    "keepFileLink": false
+  }
+}

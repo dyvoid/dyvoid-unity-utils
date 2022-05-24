@@ -1,0 +1,12 @@
+{
+  "name": "com.mediamonks.editortools",
+  "version": "0.1.0-preview",
+  "unity": "2019.4",
+  "displayName": "MediaMonks Editor Tools",
+  "author": {
+    "name": "MediaMonks"
+  },
+  "type": "tool",
+  "description": "Common editor tools",
+  "documentationUrl": "https://unity-package-docs.eu.dev.monkapps.com/com.mediamonks.editortools/"
+}

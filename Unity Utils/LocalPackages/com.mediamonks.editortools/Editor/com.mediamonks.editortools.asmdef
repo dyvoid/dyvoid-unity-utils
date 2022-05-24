@@ -1,0 +1,16 @@
+{
+    "name": "com.mediamonks.editortools",
+    "rootNamespace": "MediaMonks.EditorTools",
+    "references": ["com.mediamonks.utility"],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
