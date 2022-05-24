@@ -1,8 +1,9 @@
-﻿using MediaMonks.References;
+﻿using System;
+using MediaMonks.References;
 
 namespace Temple.State
 {
-    public interface IStateMachine<T>
+    public interface IStateMachine<T> where T : Enum
     {
         ReferenceValue<T> StateReference { get; }
         T CurrentState { get; }

@@ -3,11 +3,10 @@ using UnityEngine;
 
 namespace Temple.State
 {
-    public abstract class AbstractStateBehaviour<T> : MonoBehaviour, IStateBehaviour<T>
+    public abstract class AbstractStateBehaviour<T> : AbstractStateBehaviourBase, IStateBehaviour<T> where T : Enum
     {
-        public bool IsActive { get; private set; }
-
         public abstract T State { get; }
+        public override string StateName => State.ToString();
 
         protected IStateMachine<T> StateMachine;
 
@@ -22,24 +21,10 @@ namespace Temple.State
             StateMachine.ChangeState(state);
         }
 
-        public virtual void OnEnter()
+        public override void ChangeToThisState()
         {
-            IsActive = true;
+            ChangeState(State);
         }
 
-        public virtual void OnExit()
-        {
-            IsActive = false;
-        }
-
-        public virtual void OnUpdateState()
-        {
-
-        }
-
-        public virtual void OnFixedUpdateState()
-        {
-
-        }
     }
 }

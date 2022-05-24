@@ -1,4 +1,5 @@
-﻿using MediaMonks.References;
+﻿using System;
+using MediaMonks.References;
 using UnityEngine;
 
 namespace Temple.State
@@ -7,7 +8,7 @@ namespace Temple.State
 	/// Convenience base class for MonoBehaviours that want to listen for state changes.
 	/// Automatically subscribes to reference value changes.
 	/// </summary>
-	public abstract class StateChangeListener<T> : MonoBehaviour
+	public abstract class StateChangeListener<T> : MonoBehaviour where T : Enum
 	{
 		[SerializeField] private ReferenceValue<T> stateReference;
 

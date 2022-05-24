@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Temple.State
 {
-    public abstract class AbstractStateMachine<T> : StateChangeListener<T>, IStateMachine<T>
+    public abstract class AbstractStateMachine<T> : StateChangeListener<T>, IStateMachine<T> where T : Enum
     {
         [SerializeField] private bool _logStateChanges = false;
         [SerializeField] private T _startState;
