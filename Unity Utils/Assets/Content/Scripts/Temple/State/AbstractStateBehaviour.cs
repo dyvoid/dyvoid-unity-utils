@@ -8,13 +8,9 @@ namespace Temple.State
         public abstract T State { get; }
         public override string StateName => State.ToString();
 
-        protected IStateMachine<T> StateMachine;
+        private IStateMachine<T> _stateMachine;
+        protected IStateMachine<T> StateMachine => _stateMachine ??= GetComponent<IStateMachine<T>>();
 
-
-        protected virtual void Awake()
-        {
-            StateMachine = GetComponent<IStateMachine<T>>();
-        }
 
         public void ChangeState(T state)
         {

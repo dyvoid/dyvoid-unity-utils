@@ -10,7 +10,7 @@ namespace Temple.State
     {
         public abstract string StateName { get; }
 
-        public bool IsActive { get; protected set; }
+        public bool IsActive { get; private set; }
 
         public abstract void ChangeToThisState();
 
@@ -43,23 +43,22 @@ namespace Temple.State
         {
             DrawDefaultInspector();
 
-            if (!(target is AbstractStateBehaviourBase stateHandler)) return;
+            if (!(target is AbstractStateBehaviourBase stateBehaviour)) return;
+
+            GUILayout.Space(10);
 
             if (!Application.isPlaying)
             {
-                GUILayout.Space(10);
-                DrawStateLabel(stateHandler, false);
-                return;
+                DrawStateLabel(stateBehaviour, false);
             }
+            else
+            {
+                DrawStateLabel(stateBehaviour, stateBehaviour.IsActive);
+                GUILayout.Space(10);
+                DrawStateSwitchButton(stateBehaviour);
 
-            GUILayout.Space(10);
-
-            DrawStateLabel(stateHandler, stateHandler.IsActive);
-
-            GUI.enabled = !stateHandler.IsActive;
-            GUILayout.Space(10);
-
-            DrawStateSwitchButton(stateHandler);
+                GUI.enabled = !stateBehaviour.IsActive;
+            }
         }
 
         private static void DrawStateLabel(AbstractStateBehaviourBase stateBehaviour, bool isActiveState)

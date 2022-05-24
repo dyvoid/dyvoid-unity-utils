@@ -11,7 +11,7 @@ namespace Test
         {
             base.OnEnter();
 
-            Debug.Log("Idle enter");
+            Debug.Log("Idle OnEnter");
         }
     }
 }

@@ -11,7 +11,14 @@ namespace Test
         {
             base.OnEnter();
 
-            Debug.Log("Start enter");
+            Debug.Log("Start OnEnter");
+        }
+
+        public override void OnUpdateState()
+        {
+            base.OnUpdateState();
+
+            Debug.Log("Start state running");
         }
     }
 }

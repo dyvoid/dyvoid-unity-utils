@@ -18,16 +18,13 @@ namespace Temple.State
         private readonly Dictionary<T, IStateBehaviour<T>> _behaviourMap = new Dictionary<T, IStateBehaviour<T>>();
 
 
-        protected virtual void Awake()
+        protected override void Start()
         {
             foreach (IStateBehaviour<T> behavior in gameObject.GetComponents<IStateBehaviour<T>>())
             {
                 _behaviourMap.Add(behavior.State, behavior);
             }
-        }
 
-        protected override void Start()
-        {
             base.Start();
 
             if (!StateReference.Value.Equals(_startState))
