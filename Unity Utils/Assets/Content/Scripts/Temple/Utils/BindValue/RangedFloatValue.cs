@@ -1,88 +1,89 @@
 ﻿using System;
-using UnityEngine;
-
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
+using UnityEngine;
+using Range = MediaMonks.Utility.Range;
+
 
 namespace Temple.Utils
 {
-    [Serializable]
-    public class RangedFloatValue : FloatValue
-    {
-        [SerializeField] private Range _range = new Range();
+	[Serializable]
+	public class RangedFloatValue : FloatValue
+	{
+		[SerializeField] private Range _range = new Range();
 
-        public Range Range => _range;
+		public Range Range => _range;
 
-        private RangedFloatValue _leader;
-
-
-        public RangedFloatValue(float value = 0.0f, float boundary1 = 0.0f, float boundary2 = 1.0f) : base(value)
-        {
-            this.SetRange(boundary1, boundary2);
-        }
-
-        public void SetRange(float boundary1, float boundary2)
-        {
-            _range.Set(boundary1, boundary2);
-            // Yes really. Range/modifiers may cause value to change, so we trigger
-            // the range/modifiers by using the value setter.
-            Value = Value;
-        }
-
-        public override float Value
-        {
-            set
-            {
-                base.Value = Range.Clamp(value);
-            }
-        }
-
-        private void OnLeaderValueChanged(float newValue, float oldValue)
-        {
-            Value = _leader.Range.Translate(newValue, Range);
-        }
-
-        public void ClearBounds()
-        {
-            _range.Set(float.MinValue, float.MaxValue);
-        }
-
-        public void Follow(RangedFloatValue leader, bool getInitialValue = true)
-        {
-            if (_leader != null)
-            {
-                _leader.Unsubscribe(this.OnLeaderValueChanged);
-            }
-
-            _leader = leader;
-            _leader.Subscribe(this.OnLeaderValueChanged, getInitialValue);
-        }
-
-        public void Unfollow()
-        {
-            if (_leader != null)
-            {
-                _leader.Unsubscribe(this.OnLeaderValueChanged);
-                _leader = null;
-            }
-        }
-
-        #region ISerializationCallbackReceiver
-
-        public override void OnAfterDeserialize()
-        {
-            base.OnAfterDeserialize();
-            _value = _range.Clamp(_value);
-        }
-
-        #endregion
+		private RangedFloatValue _leader;
 
 
-    }
+		public RangedFloatValue(float value = 0.0f, float rangeFrom = 0.0f, float rangeTo = 1.0f) : base(value)
+		{
+			this.SetRange(rangeFrom, rangeTo);
+		}
+
+		public void SetRange(float from, float to)
+		{
+			_range.Set(from, to);
+			// Yes really. Range/modifiers may cause value to change, so we trigger
+			// the range/modifiers by using the value setter.
+			Value = Value;
+		}
+
+		public override float Value
+		{
+			set { base.Value = Range.Clamp(value); }
+		}
+
+		private void OnLeaderValueChanged(float newValue, float oldValue)
+		{
+			Value = _leader.Range.Remap(newValue, Range);
+		}
+
+		public void ClearBounds()
+		{
+			_range.Set(float.MinValue, float.MaxValue);
+		}
+
+		public void Follow(RangedFloatValue leader, bool getInitialValue = true)
+		{
+			if (_leader != null)
+			{
+				_leader.Unsubscribe(this.OnLeaderValueChanged);
+			}
+
+			_leader = leader;
+			_leader.Subscribe(this.OnLeaderValueChanged, getInitialValue);
+		}
+
+		public void Unfollow()
+		{
+			if (_leader != null)
+			{
+				_leader.Unsubscribe(this.OnLeaderValueChanged);
+				_leader = null;
+			}
+		}
+
+		#region ISerializationCallbackReceiver
+
+		public override void OnAfterDeserialize()
+		{
+			base.OnAfterDeserialize();
+			_value = _range.Clamp(_value);
+		}
+
+		#endregion
+
+
+	}
+}
 
 #if UNITY_EDITOR
-    [CustomPropertyDrawer(typeof(RangedFloatValue))]
+namespace Temple.Utils
+{
+	using UnityEngine;
+
+	[CustomPropertyDrawer(typeof(RangedFloatValue))]
     public class RangedFloatValueDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -126,5 +127,5 @@ namespace Temple.Utils
             return 36.0f;
         }
     }
-#endif
 }
+#endif
