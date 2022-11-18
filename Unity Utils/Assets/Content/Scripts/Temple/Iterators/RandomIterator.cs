@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Temple.Iterators;
 
-namespace Temple.Utils
+namespace Temple.Iterators
 {
 	/// <summary>
 	/// Infinitely iterates randomly over a List or an Array. The same element will never be
@@ -10,36 +11,22 @@ namespace Temple.Utils
 	/// Note that if the collection is mutated externally, it cannot be guaranteed that the
 	/// same element will not be returned twice in a row.
 	/// </summary>
-	public class RandomIterator<T>
+	public class RandomIterator<T> : AbstractCollectionIterator<T>
 	{
-		private List<T> _list;
-		private T[] _array;
-
 		private List<int> _indices = new();
 		private int _indicesIndex;
 
-		private CollectionType _collectionType;
 
-		public RandomIterator(List<T> list)
+		public RandomIterator(IList<T> list) : base(list)
 		{
-			_list = list;
-
-			_collectionType = CollectionType.List;
 		}
 
-		public RandomIterator(T[] array)
+		public override T Next()
 		{
-			_array = array;
-
-			_collectionType = CollectionType.Array;
-		}
-
-		public T Next()
-		{
-			int collectionSize = GetCollectionSize();
+			int collectionSize = List.Count;
 
 			if (collectionSize == 0) throw new Exception("Cannot iterate over an empty collection");
-			if (collectionSize == 1) return _list[0];
+			if (collectionSize == 1) return List[0];
 
 			// Create new indices list if it doesn't exist yet, or if the collection size has changed
 			if (_indices == null || collectionSize != _indices.Count)
@@ -61,21 +48,15 @@ namespace Temple.Utils
 					Shuffle(_indices);
 
 					// If the new first element is the same as the index we're about to
-					// return, remove and add it back as the last element of the indices list
+					// return, swap it with the last element of the indices list
 					if (_indices[0] == nextIndex)
 					{
-						_indices.RemoveAt(0);
-						_indices.Add(nextIndex);
+						(_indices[0], _indices[^1]) = (_indices[^1], _indices[0]);
 					}
 				}
 			}
 
-			return (_collectionType) switch
-			{
-				CollectionType.List => _list[nextIndex],
-				CollectionType.Array => _array[nextIndex],
-				_ => throw new ArgumentOutOfRangeException(nameof(_collectionType), _collectionType, null),
-			};
+			return List[nextIndex];
 		}
 
 		/// <summary>
@@ -87,7 +68,7 @@ namespace Temple.Utils
 			_indices.Clear();
 			_indicesIndex = 0;
 
-			var numIndices = GetCollectionSize();
+			var numIndices = List.Count;
 			for (int i = 0; i < numIndices; i++)
 			{
 				_indices.Add(i);
@@ -95,17 +76,7 @@ namespace Temple.Utils
 
 			Shuffle(_indices);
 		}
-
-		private int GetCollectionSize()
-		{
-			return (_collectionType) switch
-			{
-				CollectionType.List => _list.Count,
-				CollectionType.Array => _array.Length,
-				_ => throw new ArgumentOutOfRangeException(nameof(_collectionType), _collectionType, null),
-			};
-		}
-
+		
 		/// <summary>
 		/// Shuffles the contents of the <paramref name="list"/>
 		/// </summary>
@@ -122,12 +93,6 @@ namespace Temple.Utils
 				int k = rnd.Next(n + 1);
 				(list[n], list[k]) = (list[k], list[n]);
 			}
-		}
-
-		enum CollectionType
-		{
-			List,
-			Array,
 		}
 	}
 }
