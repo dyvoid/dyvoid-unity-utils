@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Temple.Utils;
 using UnityEngine;
-using Range = Temple.Utils.Range;
+using Range = MediaMonks.Utility.Range;
 
 public class RangeTest : MonoBehaviour
 {
