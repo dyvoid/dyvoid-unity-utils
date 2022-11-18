@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Temple.State
 {
@@ -12,8 +12,6 @@ namespace Temple.State
         void OnEnter();
 
         void OnExit();
-
-        void ChangeState(T state);
 
         void OnUpdateState();
 

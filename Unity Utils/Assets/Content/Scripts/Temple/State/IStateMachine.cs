@@ -1,11 +1,11 @@
-﻿using System;
-using MediaMonks.References;
+using System;
+using Temple.Utils;
 
 namespace Temple.State
 {
     public interface IStateMachine<T> where T : Enum
     {
-        ReferenceValue<T> StateReference { get; }
+	    ObservableValue<T> StateObservable { get; }
         T CurrentState { get; }
 
         IStateBehaviour<T> CurrentBehaviour { get; }
