@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Guiones.Core.Utils
+namespace MediaMonks.Utility
 {
 	/// <summary>
 	/// Simple timeout mechanism that can be run from an Update loop

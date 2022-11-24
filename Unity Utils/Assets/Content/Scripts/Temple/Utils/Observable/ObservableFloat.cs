@@ -1,22 +1,24 @@
-﻿using System;
+using System;
 using UnityEngine;
 
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-
-namespace Temple.Utils
+namespace MediaMonks.Utility
 {
     [Serializable]
-    public class FloatValue : BindValue<float>
+    public class ObservableFloat : ObservableValue<float>
     {
-        public FloatValue(float value = 0.0f) : base(value) { }
+        public ObservableFloat(float value = 0.0f) : base(value)
+        {
+        }
     }
-
+}
 
 #if UNITY_EDITOR
-    [CustomPropertyDrawer(typeof(FloatValue))]
-    public class FloatValueDrawer : PropertyDrawer
+namespace MediaMonks.Utility
+{
+    using UnityEditor;
+
+    [CustomPropertyDrawer(typeof(ObservableFloat))]
+    public class ObservableFloatDrawer : PropertyDrawer
     {
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
@@ -35,5 +37,5 @@ namespace Temple.Utils
             EditorGUI.EndProperty();
         }
     }
-#endif
 }
+#endif

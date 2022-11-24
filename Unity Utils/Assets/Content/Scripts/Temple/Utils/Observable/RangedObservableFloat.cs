@@ -1,22 +1,22 @@
-﻿using System;
+using System;
 using UnityEditor;
 using UnityEngine;
 using Range = MediaMonks.Utility.Range;
 
 
-namespace Temple.Utils
+namespace MediaMonks.Utility
 {
 	[Serializable]
-	public class RangedFloatValue : FloatValue
+	public class RangedObservableFloat : ObservableFloat
 	{
 		[SerializeField] private Range _range = new Range();
 
 		public Range Range => _range;
 
-		private RangedFloatValue _leader;
+		private RangedObservableFloat _leader;
 
 
-		public RangedFloatValue(float value = 0.0f, float rangeFrom = 0.0f, float rangeTo = 1.0f) : base(value)
+		public RangedObservableFloat(float value = 0.0f, float rangeFrom = 0.0f, float rangeTo = 1.0f) : base(value)
 		{
 			this.SetRange(rangeFrom, rangeTo);
 		}
@@ -44,7 +44,7 @@ namespace Temple.Utils
 			_range.Set(float.MinValue, float.MaxValue);
 		}
 
-		public void Follow(RangedFloatValue leader, bool getInitialValue = true)
+		public void Follow(RangedObservableFloat leader, bool getInitialValue = true)
 		{
 			if (_leader != null)
 			{
@@ -79,12 +79,13 @@ namespace Temple.Utils
 }
 
 #if UNITY_EDITOR
-namespace Temple.Utils
+namespace MediaMonks.Utility
 {
 	using UnityEngine;
+    using Range = MediaMonks.Utility.Range;
 
-	[CustomPropertyDrawer(typeof(RangedFloatValue))]
-    public class RangedFloatValueDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(RangedObservableFloat))]
+    public class RangedObservableFloatDrawer : PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
@@ -106,8 +107,8 @@ namespace Temple.Utils
             var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
 
             SerializedProperty valueProperty = property.FindPropertyRelative("_value");
-            SerializedProperty fromProperty = property.FindPropertyRelative("_range").FindPropertyRelative("_from");
-            SerializedProperty toProperty = property.FindPropertyRelative("_range").FindPropertyRelative("_to");
+            SerializedProperty fromProperty = property.FindPropertyRelative("_range").FindPropertyRelative("From");
+            SerializedProperty toProperty = property.FindPropertyRelative("_range").FindPropertyRelative("To");
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
             EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
