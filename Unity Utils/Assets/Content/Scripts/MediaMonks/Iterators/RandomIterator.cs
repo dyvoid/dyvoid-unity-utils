@@ -79,7 +79,7 @@ namespace MediaMonks.Iterators
 		/// <summary>
 		/// Shuffles the contents of the <paramref name="list"/>
 		/// </summary>
-		private void Shuffle<T>(IList<T> list, Random random = null)
+		private void Shuffle(IList<int> list, Random random = null)
 		{
 			if (list == null) throw new ArgumentNullException(nameof(list));
 

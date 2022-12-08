@@ -16,6 +16,9 @@ namespace MediaMonks.State
 		private IStateMachine<T> _stateMachine;
 		protected IStateMachine<T> StateMachine => _stateMachine ??= GetComponent<IStateMachine<T>>();
 
+		private IStateBlackboard _blackboard;
+		protected IStateBlackboard Blackboard => _blackboard ??= GetComponent<IStateBlackboard>();
+
 		/// <summary>
 		/// Whether this behaviour is currently active
 		/// </summary>
@@ -38,7 +41,7 @@ namespace MediaMonks.State
 		/// <summary>
 		/// Called once by the state machine, when the state becomes active.
 		/// </summary>
-		public virtual void OnEnter()
+		public virtual void OnEnter(T prevState)
 		{
 			
 		}
@@ -46,7 +49,7 @@ namespace MediaMonks.State
 		/// <summary>
 		/// Called once by the state machine, when the state becomes inactive.
 		/// </summary>
-		public virtual void OnExit()
+		public virtual void OnExit(T nextState)
 		{
 			
 		}

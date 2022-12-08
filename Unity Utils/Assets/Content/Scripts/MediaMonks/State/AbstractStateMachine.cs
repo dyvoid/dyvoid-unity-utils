@@ -22,7 +22,7 @@ namespace MediaMonks.State
         public T CurrentState => StateObservable.Value;
         public T PreviousState => (PreviousBehaviour != null) ? PreviousBehaviour.State : default(T);
 
-		private readonly Dictionary<T, IStateBehaviour<T>> _behaviourMap = new Dictionary<T, IStateBehaviour<T>>();
+        private readonly Dictionary<T, IStateBehaviour<T>> _behaviourMap = new Dictionary<T, IStateBehaviour<T>>();
 
 
         protected virtual void Start()
@@ -62,7 +62,7 @@ namespace MediaMonks.State
             if (_logStateChanges) Debug.Log($"[State Machine] State changed: {newState}");
 
 			// First exit the current state behaviour, if one is active
-			CurrentBehaviour?.OnExit();
+			CurrentBehaviour?.OnExit(newState);
 
             PreviousBehaviour = CurrentBehaviour;
 
@@ -70,7 +70,7 @@ namespace MediaMonks.State
 			if (_behaviourMap.TryGetValue(newState, out var newStateBehaviour))
 			{
 				CurrentBehaviour = newStateBehaviour;
-                CurrentBehaviour.OnEnter();
+                CurrentBehaviour.OnEnter(oldState);
             }
             else
             {

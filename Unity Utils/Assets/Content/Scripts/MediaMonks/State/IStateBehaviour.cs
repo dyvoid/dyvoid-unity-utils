@@ -9,9 +9,9 @@ namespace MediaMonks.State
 
         bool IsActive { get; }
 
-        void OnEnter();
+        void OnEnter(T prevState);
 
-        void OnExit();
+        void OnExit(T nextState);
 
         void OnUpdateState();
 
