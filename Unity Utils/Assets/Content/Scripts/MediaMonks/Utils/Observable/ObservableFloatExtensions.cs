@@ -1,4 +1,4 @@
-using DG.Tweening;
+/*using DG.Tweening;
 
 namespace MediaMonks.Utility
 {
@@ -20,4 +20,4 @@ namespace MediaMonks.Utility
             return observableFloat.Animate(observableFloat.Value, to, duration, ease, delay);
         }
     }
-}
+}*/

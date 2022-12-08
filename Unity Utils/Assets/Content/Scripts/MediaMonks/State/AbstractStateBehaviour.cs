@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Temple.State
+namespace MediaMonks.State
 {
 	/// <summary>
 	/// A behaviour that runs for as long as the state machine is in a particular state.

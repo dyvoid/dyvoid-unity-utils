@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Temple.Iterators;
 
-namespace Temple.Iterators
+namespace MediaMonks.Iterators
 {
 	/// <summary>
 	/// Infinitely iterates randomly over a List or an Array. The same element will never be

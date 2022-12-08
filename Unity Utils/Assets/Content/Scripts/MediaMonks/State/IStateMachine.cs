@@ -1,7 +1,7 @@
 using System;
-using Temple.Utils;
+using MediaMonks.Utility;
 
-namespace Temple.State
+namespace MediaMonks.State
 {
     public interface IStateMachine<T> where T : Enum
     {

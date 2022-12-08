@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Temple.Iterators;
 using UnityEngine;
-using Random = System.Random;
 
-namespace Temple.Iterators
+namespace MediaMonks.Iterators
 {
 	/// <summary>
 	/// Infinitely iterates over an IList. 

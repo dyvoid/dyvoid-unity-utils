@@ -1,6 +1,6 @@
 using System;
 
-namespace Temple.State
+namespace MediaMonks.State
 {
     public interface IStateBehaviour<T> where T : Enum
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-namespace Temple.Utils
+namespace MediaMonks.Utility
 {
     public class TimeScaler : MonoBehaviour
     {

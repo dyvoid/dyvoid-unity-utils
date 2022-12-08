@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Temple.Iterators
+namespace MediaMonks.Iterators
 {
 	public abstract class AbstractCollectionIterator<T> : MonoBehaviour
 	{

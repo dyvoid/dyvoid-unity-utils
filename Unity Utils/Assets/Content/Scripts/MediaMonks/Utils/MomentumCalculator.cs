@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Temple.Utils
+namespace MediaMonks.Utility
 {
 	public class MomentumCalculator
 	{

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Temple.Utils;
+using MediaMonks.Utility;
 using UnityEngine;
 
-namespace Temple.State
+namespace MediaMonks.State
 {
 	/// <summary>
 	/// A finite state machine, that automatically triggers behaviours on state changes.
@@ -35,7 +35,7 @@ namespace Temple.State
 
 			// Init the observable
             StateObservable.Value = _startState;
-			StateObservable.ChangedWithCurrentValue += HandleStateChanged;
+			StateObservable.Subscribe(HandleStateChanged);
 		}
 
 		/// <summary>
@@ -57,7 +57,7 @@ namespace Temple.State
 	        StateObservable.Value = newState;
         }
 
-        protected virtual void HandleStateChanged(T newState)
+        protected virtual void HandleStateChanged(T newState, T oldState)
         {
             if (_logStateChanges) Debug.Log($"[State Machine] State changed: {newState}");
 
@@ -90,7 +90,7 @@ namespace Temple.State
 
         protected virtual void OnDestroy()
         {
-	        StateObservable.ChangedWithCurrentValue -= HandleStateChanged;
+	        StateObservable.Unsubscribe(HandleStateChanged);
         }
 	}
 }
