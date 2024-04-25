@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace MediaMonks.Iterators
 {
-	public abstract class AbstractCollectionIterator<T> : MonoBehaviour
+	public abstract class AbstractCollectionIterator<T>
 	{
 		protected IList<T> List;
 
