@@ -241,24 +241,21 @@ namespace Utility
 		}
 
 		/// <summary>
-		/// Offsets both boundaries of the range by a certain value
+		/// Returns a new range with both boundaries offset by the given value.
 		/// </summary>
 		/// <param name="offsetValue">The value to offset the range with</param>
-		/// <returns>The Range</returns>
+		/// <returns>A new offset <see cref="ValueRange"/></returns>
 		public ValueRange Offset(float offsetValue)
 		{
-			To += offsetValue;
-			From += offsetValue;
-
-			return this;
+			return new ValueRange(From + offsetValue, To + offsetValue);
 		}
 
 		/// <summary>
-		/// Scale the size of the range. Both boundaries will be shifted equally,
-		/// in opposite directions to accommodate the new size.
+		/// Returns a new range whose size is scaled by the given value, symmetrically around the midpoint.
+		/// A negative scale value flips the direction of the range.
 		/// </summary>
 		/// <param name="scaleValue">The value to scale the range. May be negative to flip the range.</param>
-		/// <returns>The Range</returns>
+		/// <returns>A new scaled <see cref="ValueRange"/></returns>
 		public ValueRange Scale(float scaleValue)
 		{
 			float sizeDelta = (Size - (Size * scaleValue)) * 0.5f;
@@ -268,10 +265,7 @@ namespace Utility
 				sizeDelta = -sizeDelta;
 			}
 
-			From += sizeDelta;
-			To -= sizeDelta;
-
-			return this;
+			return new ValueRange(From + sizeDelta, To - sizeDelta);
 		}
 
 		public static ValueRange operator +(ValueRange range, float value)
