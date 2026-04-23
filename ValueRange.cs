@@ -187,11 +187,7 @@ namespace Utility
 		/// <returns>The ping ponged value</returns>
 		public float PingPong(float value)
 		{
-			return PingPong(value, LowerBoundary, UpperBoundary);
-		}
-
-		private float PingPong(float value, float lower, float upper)
-		{
+			float lower = LowerBoundary;
 			return Mathf.PingPong(value - lower, Size) + lower;
 		}
 
