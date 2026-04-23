@@ -32,7 +32,7 @@ namespace Utility
 			var rect = new Rect(position.x, position.y, position.width, position.height);
 
 			// Draw fields - passs GUIContent.none to each so they are drawn without labels
-			EditorGUI.PropertyField(rect, property.FindPropertyRelative("_value"), GUIContent.none);
+			EditorGUI.PropertyField(rect, property.FindPropertyRelative("value"), GUIContent.none);
 
 			EditorGUI.EndProperty();
 		}

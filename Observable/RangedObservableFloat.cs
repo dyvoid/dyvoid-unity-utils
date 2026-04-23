@@ -63,6 +63,12 @@ namespace Utility
 			}
 		}
 
+		public override void Dispose()
+		{
+			Unfollow();
+			base.Dispose();
+		}
+
 		#region ISerializationCallbackReceiver
 
 		public override void OnAfterDeserialize()
@@ -105,9 +111,9 @@ namespace Utility
             var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + 2, position.width * 0.5f, lineHeight);
             var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
 
-            SerializedProperty valueProperty = property.FindPropertyRelative("_value");
-            SerializedProperty fromProperty = property.FindPropertyRelative("_range").FindPropertyRelative("From");
-            SerializedProperty toProperty = property.FindPropertyRelative("_range").FindPropertyRelative("To");
+            SerializedProperty valueProperty = property.FindPropertyRelative("value");
+            SerializedProperty fromProperty = property.FindPropertyRelative("range").FindPropertyRelative("From");
+            SerializedProperty toProperty = property.FindPropertyRelative("range").FindPropertyRelative("To");
 
             // Draw fields - pass GUIContent.none to each so they are drawn without labels
             EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
