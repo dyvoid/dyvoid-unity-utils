@@ -50,6 +50,11 @@ namespace Iterators
 
 			foreach (var iterator in iterators)
 			{
+				if (iterator == null)
+				{
+					throw new ArgumentException("Iterators must not be null", nameof(iterators));
+				}
+
 				this.iterators.Add(iterator);
 			}
 		}

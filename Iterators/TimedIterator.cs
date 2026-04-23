@@ -44,7 +44,7 @@ namespace Iterators
 		{
 			if (list.Count == 0)
 			{
-				throw new Exception("Cannot iterate over an empty collection");
+				throw new InvalidOperationException("Cannot iterate over an empty collection");
 			}
 
 			// Calculate which item to return based on accumulated time
