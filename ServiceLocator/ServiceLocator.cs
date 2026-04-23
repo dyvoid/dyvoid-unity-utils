@@ -32,7 +32,9 @@ public static class ServiceLocator
 
 		var key = (typeof(T), name);
 		if (_services.ContainsKey(key))
-			UnityEngine.Debug.LogWarning($"Service {typeof(T).Name}{(name != null ? $" ({name})" : "")} is being overwritten");
+		{
+			Debug.LogWarning($"Service {typeof(T).Name}{(name != null ? $" ({name})" : "")} is being overwritten");
+		}
 
 		_services[key] = service;
 	}

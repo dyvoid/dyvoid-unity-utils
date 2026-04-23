@@ -31,6 +31,7 @@ namespace State
 	/// </example>
 	public abstract class FSM<TState> : MonoBehaviour where TState : Enum
 	{
+		[SerializeField] private TState initialState = default;
 		[SerializeField] private bool logStateChanges = false;
 
 		/// <summary>Observable that emits state changes.</summary>
@@ -76,7 +77,9 @@ namespace State
 				behaviourMap.Add(behavior.State, behavior);
 			}
 
-			// Init the observable
+			// Seed the observable with the configured initial state before subscribing
+			// so the first notification fires with an intentional state rather than default(TState).
+			StateObservable.Value = initialState;
 			StateObservable.Subscribe(HandleStateChanged, true);
 		}
 
