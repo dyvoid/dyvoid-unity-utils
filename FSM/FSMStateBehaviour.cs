@@ -189,9 +189,11 @@ namespace State
 			{
 				DrawStateLabel(stateBehaviour, stateBehaviour.IsActive);
 				GUILayout.Space(10);
-				DrawStateSwitchButton(stateBehaviour);
 
-				GUI.enabled = !stateBehaviour.IsActive;
+				using (new EditorGUI.DisabledScope(stateBehaviour.IsActive))
+				{
+					DrawStateSwitchButton(stateBehaviour);
+				}
 			}
 		}
 
