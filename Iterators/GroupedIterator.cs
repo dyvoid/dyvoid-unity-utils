@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Iterators
@@ -7,7 +8,11 @@ namespace Iterators
 	/// Returns items in groups/batches rather than individually.
 	/// Useful for batch processing or chunking data.
 	/// </summary>
-	public class GroupedIterator<T>
+	/// <remarks>
+	/// Implements <see cref="IEnumerable{T}"/> over groups (<see cref="List{T}"/>). The enumerator yields
+	/// groups of the configured size indefinitely; bound your iteration with <c>Take(n)</c> or <c>break</c>.
+	/// </remarks>
+	public class GroupedIterator<T> : IEnumerable<List<T>>
 	{
 		private readonly CollectionIteratorBase<T> baseIterator;
 		private readonly int groupSize;
@@ -81,5 +86,15 @@ namespace Iterators
 
 			return group;
 		}
+
+		public IEnumerator<List<T>> GetEnumerator()
+		{
+			while (true)
+			{
+				yield return NextGroup();
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }

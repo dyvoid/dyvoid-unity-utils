@@ -48,7 +48,7 @@ public abstract class ServiceBootstrap : MonoBehaviour
 	/// </example>
 	protected abstract void RegisterServices();
 	
-	void OnDestroy()
+	public void OnDestroy()
 	{
 		OnBootstrapDestroy();
 	}

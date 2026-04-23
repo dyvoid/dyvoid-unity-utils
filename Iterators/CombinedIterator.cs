@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Iterators
@@ -7,7 +8,11 @@ namespace Iterators
 	/// Chains multiple collections into a single iteration sequence.
 	/// Iterates through each collection in order.
 	/// </summary>
-	public class CombinedIterator<T>
+	/// <remarks>
+	/// Implements <see cref="IEnumerable{T}"/>. The enumerator yields <see cref="Next"/> from the current
+	/// sub-iterator indefinitely; bound your iteration with <c>Take(n)</c> or <c>break</c>.
+	/// </remarks>
+	public class CombinedIterator<T> : IEnumerable<T>
 	{
 		private readonly List<CollectionIteratorBase<T>> iterators = new();
 		private int currentIteratorIndex = 0;
@@ -97,5 +102,15 @@ namespace Iterators
 
 			currentIteratorIndex = index;
 		}
+
+		public IEnumerator<T> GetEnumerator()
+		{
+			while (true)
+			{
+				yield return Next();
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 	}
 }
