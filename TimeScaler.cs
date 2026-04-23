@@ -18,6 +18,7 @@ namespace Utility
 		[SerializeField] private bool useNumberKeys = true;
 
 		private float prevTimeScale = 1.0f;
+		private bool isPaused;
 		private Dictionary<int, float> _timeScaleMap;
 #if ENABLE_INPUT_SYSTEM
 		private KeyControl[] _digitKeys;
@@ -73,7 +74,7 @@ namespace Utility
 					if ((useNumberKeys && Input.GetKeyDown(KeyCode.Alpha0 + i)) || 
 						(!useNumberKeys && Input.GetKeyDown(KeyCode.Keypad0 + i)))
 					{
-						Time.timeScale = _timeScaleMap[i];
+						SetTimeScale(_timeScaleMap[i]);
 						break;
 					}
 				}
@@ -93,7 +94,7 @@ namespace Utility
 				{
 					if (keys[i].wasPressedThisFrame)
 					{
-						Time.timeScale = _timeScaleMap[i];
+						SetTimeScale(_timeScaleMap[i]);
 						break;
 					}
 				}
@@ -108,18 +109,34 @@ namespace Utility
 		}
 
 		/// <summary>
+		/// Applies a new time scale and keeps the pause state in sync.
+		/// </summary>
+		private void SetTimeScale(float scale)
+		{
+			Time.timeScale = scale;
+			isPaused = (scale == 0f);
+
+			if (!isPaused)
+			{
+				prevTimeScale = scale;
+			}
+		}
+
+		/// <summary>
 		/// Toggles the pause state of the game by setting the time scale to 0 or reverting to the previous time scale.
 		/// </summary>
 		private void TogglePause()
 		{
-			if (Time.timeScale == 0.0f)
+			if (isPaused)
 			{
 				Time.timeScale = prevTimeScale;
+				isPaused = false;
 			}
 			else
 			{
 				prevTimeScale = Time.timeScale;
 				Time.timeScale = 0.0f;
+				isPaused = true;
 			}
 		}
 	}
