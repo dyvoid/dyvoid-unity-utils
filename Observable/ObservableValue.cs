@@ -145,7 +145,7 @@ namespace Utility
 		/// Releases all resources used by the <see cref="ObservableValue{T}"/> object.
 		/// Specifically, it clears all subscribers from <see cref="ChangedAction"/>.
 		/// </summary>
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			ChangedAction = null;
 		}
