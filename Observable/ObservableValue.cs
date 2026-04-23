@@ -59,7 +59,7 @@ namespace Utility
 		public ObservableValue<T2> Map<T2>(Func<T, T, T2> handler)
 		{
 			ObservableValue<T2> mappedValue = new ObservableValue<T2>(handler.Invoke(value, value));
-			Subscribe((to, from) => mappedValue.Value = handler.Invoke(to, from), true);
+			Subscribe((to, from) => mappedValue.Value = handler.Invoke(to, from));
 			return mappedValue;
 		}
 
@@ -78,8 +78,8 @@ namespace Utility
 		public static ObservableValue<T3> Merge<T1, T2, T3>(ObservableValue<T1> value1, ObservableValue<T2> value2, Func<T1, T2, T3> combinator)
 		{
 			ObservableValue<T3> c = new ObservableValue<T3>(combinator.Invoke(value1.Value, value2.Value));
-			value1.Subscribe((to, from) => c.Value = combinator.Invoke(to, value2.Value), true);
-			value2.Subscribe((to, from) => c.Value = combinator.Invoke(value1.Value, to), true);
+			value1.Subscribe((to, from) => c.Value = combinator.Invoke(to, value2.Value));
+			value2.Subscribe((to, from) => c.Value = combinator.Invoke(value1.Value, to));
 			return c;
 		}
 
