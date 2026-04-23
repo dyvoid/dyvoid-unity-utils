@@ -68,6 +68,11 @@ namespace State
 			// Fetch all the state behaviours on this game object
 			foreach (FSMStateBehaviour<TState> behavior in gameObject.GetComponents<FSMStateBehaviour<TState>>())
 			{
+				if (behaviourMap.ContainsKey(behavior.State))
+				{
+					throw new InvalidOperationException($"[FSM] Duplicate behaviour for state '{behavior.State}' on GameObject '{gameObject.name}'. Each state must have at most one behaviour.");
+				}
+
 				behaviourMap.Add(behavior.State, behavior);
 			}
 
@@ -83,6 +88,17 @@ namespace State
 		public FSMStateBehaviour<TState> GetBehavior(TState state)
 		{
 			return behaviourMap[state];
+		}
+
+		/// <summary>
+		/// Try to get a behavior that is registered with this state machine.
+		/// </summary>
+		/// <param name="state">The state of the behaviour to get</param>
+		/// <param name="behaviour">The registered behaviour, or null if none is registered for the given state</param>
+		/// <returns>True if a behaviour for the given state is registered</returns>
+		public bool TryGetBehavior(TState state, out FSMStateBehaviour<TState> behaviour)
+		{
+			return behaviourMap.TryGetValue(state, out behaviour);
 		}
 
 		/// <summary>
@@ -130,7 +146,7 @@ namespace State
 		/// <summary>Cleans up subscriptions when the FSM is destroyed.</summary>
 		protected virtual void OnDestroy()
 		{
-			StateObservable.Unsubscribe(HandleStateChanged);
+			StateObservable.Dispose();
 		}
 	}
 
