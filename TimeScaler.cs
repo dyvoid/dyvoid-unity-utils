@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 #endif
 
 namespace Utility
@@ -18,6 +19,10 @@ namespace Utility
 
 		private float prevTimeScale = 1.0f;
 		private Dictionary<int, float> _timeScaleMap;
+#if ENABLE_INPUT_SYSTEM
+		private KeyControl[] _digitKeys;
+		private KeyControl[] _numpadKeys;
+#endif
 
 		/// <summary>
 		/// Initializes the time scale map with predefined values.        
@@ -38,6 +43,20 @@ namespace Utility
 				{ 8, 10.0f },
 				{ 9, 25.0f }
 			};
+
+#if ENABLE_INPUT_SYSTEM
+			var kb = Keyboard.current;
+			_digitKeys = new[]
+			{
+				kb.digit0Key, kb.digit1Key, kb.digit2Key, kb.digit3Key, kb.digit4Key,
+				kb.digit5Key, kb.digit6Key, kb.digit7Key, kb.digit8Key, kb.digit9Key
+			};
+			_numpadKeys = new[]
+			{
+				kb.numpad0Key, kb.numpad1Key, kb.numpad2Key, kb.numpad3Key, kb.numpad4Key,
+				kb.numpad5Key, kb.numpad6Key, kb.numpad7Key, kb.numpad8Key, kb.numpad9Key
+			};
+#endif
 		}
 
 		/// <summary>
@@ -68,19 +87,7 @@ namespace Utility
 #elif ENABLE_INPUT_SYSTEM
 			if (!requireLeftShift || Keyboard.current.leftShiftKey.isPressed)
 			{
-				var keys = useNumberKeys ? new[]
-				{
-					Keyboard.current.digit0Key, Keyboard.current.digit1Key, Keyboard.current.digit2Key,
-					Keyboard.current.digit3Key, Keyboard.current.digit4Key, Keyboard.current.digit5Key,
-					Keyboard.current.digit6Key, Keyboard.current.digit7Key, Keyboard.current.digit8Key,
-					Keyboard.current.digit9Key
-				} : new[]
-				{
-					Keyboard.current.numpad0Key, Keyboard.current.numpad1Key, Keyboard.current.numpad2Key,
-					Keyboard.current.numpad3Key, Keyboard.current.numpad4Key, Keyboard.current.numpad5Key,
-					Keyboard.current.numpad6Key, Keyboard.current.numpad7Key, Keyboard.current.numpad8Key,
-					Keyboard.current.numpad9Key
-				};
+				KeyControl[] keys = useNumberKeys ? _digitKeys : _numpadKeys;
 
 				for (int i = 0; i < keys.Length; i++)
 				{
