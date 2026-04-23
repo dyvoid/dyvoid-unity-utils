@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using UnityEngine;
 
 /// <summary>
 /// A static service locator that provides a centralized registry for application services.
@@ -11,6 +12,12 @@ public static class ServiceLocator
 	/// Internal dictionary storing all registered services. The key is a tuple of (Type, name).
 	/// </summary>
 	static readonly ConcurrentDictionary<(Type, string), object> _services = new();
+
+	[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+	static void ResetStatics()
+	{
+		_services.Clear();
+	}
 
 	/// <summary>
 	/// Registers a service instance for the specified type.
