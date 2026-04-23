@@ -9,7 +9,14 @@ namespace Utility
 	/// Represents a value that can be observed for changes.
 	/// Notifies subscribers when its value is modified.
 	/// </summary>
+	/// <remarks>
+	/// Implements <see cref="IDisposable"/> but calling <see cref="Dispose"/> is optional.
+	/// For plain observables, subscribers are cleaned up by GC when the owner is collected.
+	/// Call <see cref="Dispose"/> when you want to explicitly sever all subscriptions, or
+	/// when disposing of a <c>Map</c>/<c>Merge</c> result to detach it from its source(s).
+	/// </remarks>
 	/// <typeparam name="T">The type of the value being observed.</typeparam>
+	[Serializable]
 	public class ObservableValue<T> : IDisposable, ISerializationCallbackReceiver
 	{
 		// This field is required for inheriting classes to be serializable
@@ -30,6 +37,10 @@ namespace Utility
 		/// Gets or sets the current value.
 		/// Setting this property will notify subscribers if the new value is different from the current value.
 		/// </summary>
+		/// <remarks>
+		/// Avoid setting <see cref="Value"/> from within a subscriber callback: doing so causes
+		/// depth-first recursive notifications with interleaved old/new pairs.
+		/// </remarks>
 		public virtual T Value
 		{
 			get { return value; }
@@ -97,8 +108,7 @@ namespace Utility
 		/// <returns>This <see cref="ObservableValue{T}"/> instance, allowing for fluent chaining.</returns>
 		public ObservableValue<T> Subscribe(Action<T, T> callback, bool getInitialValue = false)
 		{
-			bool alreadySubscribed = changedAction != null
-				&& Array.IndexOf(changedAction.GetInvocationList(), (Delegate)callback) >= 0;
+			bool alreadySubscribed = (changedAction != null && Array.IndexOf(changedAction.GetInvocationList(), (Delegate)callback) >= 0);
 
 			if (!alreadySubscribed)
 			{
