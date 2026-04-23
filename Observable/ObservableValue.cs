@@ -15,11 +15,7 @@ namespace Utility
 		// This field is required for inheriting classes to be serializable
 		[SerializeField] protected T value;
 
-		/// <summary>
-		/// Action triggered when the value changes.
-		/// The first parameter is the new value, the second is the old value.
-		/// </summary>
-		public Action<T, T> ChangedAction;
+		private Action<T, T> changedAction;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="ObservableValue{T}"/> class.
@@ -32,7 +28,7 @@ namespace Utility
 
 		/// <summary>
 		/// Gets or sets the current value.
-		/// Setting this property will trigger the <see cref="ChangedAction"/> if the new value is different from the current value.
+		/// Setting this property will notify subscribers if the new value is different from the current value.
 		/// </summary>
 		public virtual T Value
 		{
@@ -58,9 +54,7 @@ namespace Utility
 		/// <returns>A new <see cref="ObservableValue{T2}"/> whose value is mapped from this observable.</returns>
 		public ObservableValue<T2> Map<T2>(Func<T, T, T2> handler)
 		{
-			ObservableValue<T2> mappedValue = new ObservableValue<T2>(handler.Invoke(value, value));
-			Subscribe((to, from) => mappedValue.Value = handler.Invoke(to, from));
-			return mappedValue;
+			return new MappedObservableValue<T, T2>(this, handler);
 		}
 
 		/// <summary>
@@ -77,10 +71,7 @@ namespace Utility
 		/// <returns>A new <see cref="ObservableValue{T3}"/> whose value is a combination of the two source observables.</returns>
 		public static ObservableValue<T3> Merge<T1, T2, T3>(ObservableValue<T1> value1, ObservableValue<T2> value2, Func<T1, T2, T3> combinator)
 		{
-			ObservableValue<T3> c = new ObservableValue<T3>(combinator.Invoke(value1.Value, value2.Value));
-			value1.Subscribe((to, from) => c.Value = combinator.Invoke(to, value2.Value));
-			value2.Subscribe((to, from) => c.Value = combinator.Invoke(value1.Value, to));
-			return c;
+			return new MergedObservableValue<T1, T2, T3>(value1, value2, combinator);
 		}
 
 		/// <summary>
@@ -106,7 +97,13 @@ namespace Utility
 		/// <returns>This <see cref="ObservableValue{T}"/> instance, allowing for fluent chaining.</returns>
 		public ObservableValue<T> Subscribe(Action<T, T> callback, bool getInitialValue = false)
 		{
-			ChangedAction += callback;
+			bool alreadySubscribed = changedAction != null
+				&& Array.IndexOf(changedAction.GetInvocationList(), (Delegate)callback) >= 0;
+
+			if (!alreadySubscribed)
+			{
+				changedAction += callback;
+			}
 
 			if (getInitialValue)
 			{
@@ -123,31 +120,31 @@ namespace Utility
 		/// <returns>This <see cref="ObservableValue{T}"/> instance, allowing for fluent chaining.</returns>
 		public ObservableValue<T> Unsubscribe(Action<T, T> callback)
 		{
-			if (ChangedAction != null)
+			if (changedAction != null)
 			{
-				ChangedAction -= callback;
+				changedAction -= callback;
 			}
 
 			return this;
 		}
 
 		/// <summary>
-		/// Invoked when the value has changed. Triggers the <see cref="ChangedAction"/>.
+		/// Invoked when the value has changed. Triggers the change notification.
 		/// </summary>
 		/// <param name="newValue">The new value.</param>
 		/// <param name="oldValue">The old value.</param>
 		protected void OnValueChanged(T newValue, T oldValue)
 		{
-			ChangedAction?.Invoke(newValue, oldValue);
+			changedAction?.Invoke(newValue, oldValue);
 		}
 
 		/// <summary>
 		/// Releases all resources used by the <see cref="ObservableValue{T}"/> object.
-		/// Specifically, it clears all subscribers from <see cref="ChangedAction"/>.
+		/// Specifically, it clears all subscribers.
 		/// </summary>
 		public virtual void Dispose()
 		{
-			ChangedAction = null;
+			changedAction = null;
 		}
 
 		#region ISerializationCallbackReceiver
