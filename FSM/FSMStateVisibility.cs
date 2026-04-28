@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utility;
 
-namespace State
+namespace Utility
 {
 	/// <summary>
 	/// Controls GameObject visibility based on enum state changes from any observable source.

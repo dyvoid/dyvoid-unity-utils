@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Chains multiple collections into a single iteration sequence.

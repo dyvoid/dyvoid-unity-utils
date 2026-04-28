@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Traverses in random order. Every index is returned once before reshuffling.

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Returns items in groups/batches rather than individually.

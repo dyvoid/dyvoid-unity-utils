@@ -6,7 +6,7 @@ using System.ComponentModel;
 using UnityEditor;
 #endif
 
-namespace State
+namespace Utility
 {
 	/// <summary>
 	/// Base class for defining behaviors associated with specific states in a finite state machine (FSM).
@@ -156,7 +156,7 @@ namespace State
 	/// Do not inherit from this class, use either <see cref="FSMStateBehaviour{TState}"/> or
 	/// <see cref="FSMStateBehaviour{TState, TBlackboard}"/> instead.
 	/// </summary>
- 	[EditorBrowsable(EditorBrowsableState.Never)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public abstract class StateBehaviourBase : MonoBehaviour
 	{
 		/// <summary>Gets the name of the state this behavior represents.</summary>

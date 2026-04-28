@@ -87,51 +87,51 @@ namespace Utility
 namespace Utility
 {
 	using UnityEngine;
-    using Range = Utility.ValueRange;
+	using Range = Utility.ValueRange;
 
-    [CustomPropertyDrawer(typeof(RangedObservableFloat))]
-    public class RangedObservableFloatDrawer : PropertyDrawer
-    {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            EditorGUI.BeginProperty(position, label, property);
+	[CustomPropertyDrawer(typeof(RangedObservableFloat))]
+	public class RangedObservableFloatDrawer : PropertyDrawer
+	{
+		public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+		{
+			EditorGUI.BeginProperty(position, label, property);
 
-            // Get position
-            position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
+			// Get position
+			position = EditorGUI.PrefixLabel(position, GUIUtility.GetControlID(FocusType.Passive), label);
 
-            // Don't make child fields be indented
-            var indent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
+			// Don't make child fields be indented
+			var indent = EditorGUI.indentLevel;
+			EditorGUI.indentLevel = 0;
 
-            float lineHeight = 17f;
+			float lineHeight = 17f;
 
-            // Calculate rects
-            var valueRect = new Rect(position.x, position.y, position.width, lineHeight);
-            var fromRect = new Rect(position.x, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
-            var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + 2, position.width * 0.5f, lineHeight);
-            var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
+			// Calculate rects
+			var valueRect = new Rect(position.x, position.y, position.width, lineHeight);
+			var fromRect = new Rect(position.x, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
+			var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + 2, position.width * 0.5f, lineHeight);
+			var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
 
-            SerializedProperty valueProperty = property.FindPropertyRelative("value");
-            SerializedProperty fromProperty = property.FindPropertyRelative("range").FindPropertyRelative("From");
-            SerializedProperty toProperty = property.FindPropertyRelative("range").FindPropertyRelative("To");
+			SerializedProperty valueProperty = property.FindPropertyRelative("value");
+			SerializedProperty fromProperty = property.FindPropertyRelative("range").FindPropertyRelative("From");
+			SerializedProperty toProperty = property.FindPropertyRelative("range").FindPropertyRelative("To");
 
-            // Draw fields - pass GUIContent.none to each so they are drawn without labels
-            EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
+			// Draw fields - pass GUIContent.none to each so they are drawn without labels
+			EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
 
-            EditorGUI.PropertyField(fromRect, fromProperty, GUIContent.none);
-            valueProperty.floatValue = GUI.HorizontalSlider(rangeRect, valueProperty.floatValue, fromProperty.floatValue, toProperty.floatValue);
-            EditorGUI.PropertyField(toRect, toProperty, GUIContent.none);
+			EditorGUI.PropertyField(fromRect, fromProperty, GUIContent.none);
+			valueProperty.floatValue = GUI.HorizontalSlider(rangeRect, valueProperty.floatValue, fromProperty.floatValue, toProperty.floatValue);
+			EditorGUI.PropertyField(toRect, toProperty, GUIContent.none);
 
-            // Set indent back to what it was
-            EditorGUI.indentLevel = indent;
+			// Set indent back to what it was
+			EditorGUI.indentLevel = indent;
 
-            EditorGUI.EndProperty();
-        }
+			EditorGUI.EndProperty();
+		}
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            return 36.0f;
-        }
-    }
+		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+		{
+			return 36.0f;
+		}
+	}
 }
 #endif

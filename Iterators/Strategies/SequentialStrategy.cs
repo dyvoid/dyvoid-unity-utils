@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Traverses sequentially: 0, 1, 2, ..., N, 0, 1, 2, ...

@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-namespace State
+namespace Utility
 {
 	/// <summary>
 	/// A flexible, component-based finite state machine implementation that manages state transitions

@@ -1,4 +1,4 @@
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Defines how to traverse a collection by providing the next index.

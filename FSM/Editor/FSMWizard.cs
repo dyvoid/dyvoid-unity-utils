@@ -5,7 +5,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace State.Editor
+namespace Utility.Editor
 {
 	/// <summary>
 	/// Editor wizard for generating FSM boilerplate code.
@@ -350,7 +350,7 @@ namespace State.Editor
 		private string GenerateFSMClass()
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("using State;");
+			sb.AppendLine("using Utility;");
 			sb.AppendLine();
 
 			if (!string.IsNullOrWhiteSpace(namespaceName))
@@ -375,7 +375,7 @@ namespace State.Editor
 		private string GenerateBlackboard()
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("using State;");
+			sb.AppendLine("using Utility;");
 			sb.AppendLine();
 
 			if (!string.IsNullOrWhiteSpace(namespaceName))
@@ -402,7 +402,7 @@ namespace State.Editor
 		private string GenerateVisibility()
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("using State;");
+			sb.AppendLine("using Utility;");
 			sb.AppendLine("using Utility;");
 			sb.AppendLine("using UnityEngine;");
 			sb.AppendLine();
@@ -441,7 +441,7 @@ namespace State.Editor
 		private string GenerateStateBehaviour(string state)
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("using State;");
+			sb.AppendLine("using Utility;");
 			sb.AppendLine();
 
 			string baseClass = generateBlackboard
@@ -496,7 +496,7 @@ namespace State.Editor
 		private string GenerateAllStateBehaviours()
 		{
 			var sb = new StringBuilder();
-			sb.AppendLine("using State;");
+			sb.AppendLine("using Utility;");
 			sb.AppendLine();
 
 			string baseClass = generateBlackboard

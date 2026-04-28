@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Returns items based on time intervals. Loops infinitely through the collection.

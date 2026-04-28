@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Iterators
+namespace Utility
 {
 	public enum IterationMode
 	{

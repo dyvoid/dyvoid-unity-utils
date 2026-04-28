@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Iterators
+namespace Utility
 {
 	/// <summary>
 	/// Base class for collection iterators.
