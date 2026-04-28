@@ -312,262 +312,105 @@ namespace Utility.Editor
 			}
 		}
 
-		private string GenerateEnum()
+		private string ApplyTemplate(string template)
 		{
-			var sb = new StringBuilder();
+			template = template.Replace("#FSM_NAME#", fsmName);
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
+			if (string.IsNullOrWhiteSpace(namespaceName))
 			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic enum {fsmName}State");
-				sb.AppendLine("\t{");
+				template = template
+					.Replace("#NAMESPACE_START#\r\n", "")
+					.Replace("#NAMESPACE_START#\n", "")
+					.Replace("#NAMESPACE_END#", "");
 
-				foreach (string state in states)
+				// Remove one level of indentation
+				template = template.Replace("\r\n\t", "\r\n").Replace("\n\t", "\n");
+
+				if (template.StartsWith("\t"))
 				{
-					sb.AppendLine($"\t\t{state},");
+					template = template.Substring(1);
 				}
-
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
+				
+				return template;
 			}
 			else
 			{
-				sb.AppendLine($"public enum {fsmName}State");
-				sb.AppendLine("{");
-
-				foreach (string state in states)
-				{
-					sb.AppendLine($"\t{state},");
-				}
-
-				sb.AppendLine("}");
+				return template
+					.Replace("#NAMESPACE_START#", $"namespace {namespaceName}\n{{")
+					.Replace("#NAMESPACE_END#", "}");
 			}
+		}
 
-			return sb.ToString();
+		private string GenerateEnum()
+		{
+			string template = FSMWizardTemplates.EnumTemplate;
+
+			var statesList = new System.Collections.Generic.List<string>();
+			foreach (string state in states)
+			{
+				statesList.Add($"\t\t{state},");
+			}
+			
+			template = template.Replace("#STATES#", string.Join("\n", statesList));
+			return ApplyTemplate(template);
 		}
 
 		private string GenerateFSMClass()
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine("using Utility;");
-			sb.AppendLine();
+			string template = FSMWizardTemplates.FSMClassTemplate;
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
-			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic class {fsmName}FSM : FSM<{fsmName}State>");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
-			else
-			{
-				sb.AppendLine($"public class {fsmName}FSM : FSM<{fsmName}State>");
-				sb.AppendLine("{");
-				sb.AppendLine("}");
-			}
-
-			return sb.ToString();
+			return ApplyTemplate(template);
 		}
 
 		private string GenerateBlackboard()
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine("using Utility;");
-			sb.AppendLine();
+			string template = FSMWizardTemplates.BlackboardTemplate;
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
-			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic class {fsmName}Blackboard : FSMBlackboard");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t\t// Add shared references and data here.");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
-			else
-			{
-				sb.AppendLine($"public class {fsmName}Blackboard : FSMBlackboard");
-				sb.AppendLine("{");
-				sb.AppendLine("\t// Add shared references and data here.");
-				sb.AppendLine("}");
-			}
-
-			return sb.ToString();
+			return ApplyTemplate(template);
 		}
 
 		private string GenerateVisibility()
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine("using Utility;");
-			sb.AppendLine("using Utility;");
-			sb.AppendLine("using UnityEngine;");
-			sb.AppendLine();
+			string template = FSMWizardTemplates.VisibilityTemplate;
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
-			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic class {fsmName}StateVisibility : FSMStateVisibility<{fsmName}State>");
-				sb.AppendLine("\t{");
-				sb.AppendLine($"\t\t[SerializeField] private {fsmName}FSM fsm;");
-				sb.AppendLine();
-				sb.AppendLine($"\t\tprotected override ObservableValue<{fsmName}State> GetStateObservable()");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t\treturn fsm.StateObservable;");
-				sb.AppendLine("\t\t}");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
-			else
-			{
-				sb.AppendLine($"public class {fsmName}StateVisibility : FSMStateVisibility<{fsmName}State>");
-				sb.AppendLine("{");
-				sb.AppendLine($"\t[SerializeField] private {fsmName}FSM fsm;");
-				sb.AppendLine();
-				sb.AppendLine($"\tprotected override ObservableValue<{fsmName}State> GetStateObservable()");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t\treturn fsm.StateObservable;");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
-
-			return sb.ToString();
+			return ApplyTemplate(template);
 		}
 
 		private string GenerateStateBehaviour(string state)
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine("using Utility;");
-			sb.AppendLine();
+			string template = FSMWizardTemplates.StateBehaviourTemplate;
 
 			string baseClass = generateBlackboard
-				? $"FSMStateBehaviour<{fsmName}State, {fsmName}Blackboard>"
-				: $"FSMStateBehaviour<{fsmName}State>";
+				? $"FSMStateBehaviour<#FSM_NAME#State, #FSM_NAME#Blackboard>"
+				: $"FSMStateBehaviour<#FSM_NAME#State>";
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
-			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic class {fsmName}{state}StateBehaviour : {baseClass}");
-				sb.AppendLine("\t{");
-				sb.AppendLine($"\t\tpublic override {fsmName}State State => {fsmName}State.{state};");
-				sb.AppendLine();
-				sb.AppendLine($"\t\tpublic override void OnEnter({fsmName}State prevState)");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t}");
-				sb.AppendLine();
-				sb.AppendLine($"\t\tpublic override void OnExit({fsmName}State nextState)");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t}");
-				sb.AppendLine();
-				sb.AppendLine("\t\tpublic override void OnUpdateState()");
-				sb.AppendLine("\t\t{");
-				sb.AppendLine("\t\t}");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
-			else
-			{
-				sb.AppendLine($"public class {fsmName}{state}StateBehaviour : {baseClass}");
-				sb.AppendLine("{");
-				sb.AppendLine($"\tpublic override {fsmName}State State => {fsmName}State.{state};");
-				sb.AppendLine();
-				sb.AppendLine($"\tpublic override void OnEnter({fsmName}State prevState)");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t}");
-				sb.AppendLine();
-				sb.AppendLine($"\tpublic override void OnExit({fsmName}State nextState)");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t}");
-				sb.AppendLine();
-				sb.AppendLine("\tpublic override void OnUpdateState()");
-				sb.AppendLine("\t{");
-				sb.AppendLine("\t}");
-				sb.AppendLine("}");
-			}
+			template = template
+				.Replace("#STATE#", state)
+				.Replace("#BASE_CLASS#", baseClass);
 
-			return sb.ToString();
+			return ApplyTemplate(template);
 		}
 
 		private string GenerateAllStateBehaviours()
 		{
-			var sb = new StringBuilder();
-			sb.AppendLine("using Utility;");
-			sb.AppendLine();
+			string template = FSMWizardTemplates.AllStateBehavioursTemplate;
+			string classTemplate = FSMWizardTemplates.SingleStateClassTemplate;
 
 			string baseClass = generateBlackboard
-				? $"FSMStateBehaviour<{fsmName}State, {fsmName}Blackboard>"
-				: $"FSMStateBehaviour<{fsmName}State>";
+				? $"FSMStateBehaviour<#FSM_NAME#State, #FSM_NAME#Blackboard>"
+				: $"FSMStateBehaviour<#FSM_NAME#State>";
 
-			if (!string.IsNullOrWhiteSpace(namespaceName))
+			var classesList = new System.Collections.Generic.List<string>();
+			foreach (string state in states)
 			{
-				sb.AppendLine($"namespace {namespaceName}");
-				sb.AppendLine("{");
-
-				for (int i = 0; i < states.Count; i++)
-				{
-					string state = states[i];
-
-					sb.AppendLine($"\tpublic class {fsmName}{state}StateBehaviour : {baseClass}");
-					sb.AppendLine("\t{");
-					sb.AppendLine($"\t\tpublic override {fsmName}State State => {fsmName}State.{state};");
-					sb.AppendLine();
-					sb.AppendLine($"\t\tpublic override void OnEnter({fsmName}State prevState)");
-					sb.AppendLine("\t\t{");
-					sb.AppendLine("\t\t}");
-					sb.AppendLine();
-					sb.AppendLine($"\t\tpublic override void OnExit({fsmName}State nextState)");
-					sb.AppendLine("\t\t{");
-					sb.AppendLine("\t\t}");
-					sb.AppendLine();
-					sb.AppendLine("\t\tpublic override void OnUpdateState()");
-					sb.AppendLine("\t\t{");
-					sb.AppendLine("\t\t}");
-					sb.AppendLine("\t}");
-
-					if (i < states.Count - 1)
-					{
-						sb.AppendLine();
-					}
-				}
-
-				sb.AppendLine("}");
-			}
-			else
-			{
-				for (int i = 0; i < states.Count; i++)
-				{
-					string state = states[i];
-
-					sb.AppendLine($"public class {fsmName}{state}StateBehaviour : {baseClass}");
-					sb.AppendLine("{");
-					sb.AppendLine($"\tpublic override {fsmName}State State => {fsmName}State.{state};");
-					sb.AppendLine();
-					sb.AppendLine($"\tpublic override void OnEnter({fsmName}State prevState)");
-					sb.AppendLine("\t{");
-					sb.AppendLine("\t}");
-					sb.AppendLine();
-					sb.AppendLine($"\tpublic override void OnExit({fsmName}State nextState)");
-					sb.AppendLine("\t{");
-					sb.AppendLine("\t}");
-					sb.AppendLine();
-					sb.AppendLine("\tpublic override void OnUpdateState()");
-					sb.AppendLine("\t{");
-					sb.AppendLine("\t}");
-					sb.AppendLine("}");
-
-					if (i < states.Count - 1)
-					{
-						sb.AppendLine();
-					}
-				}
+				classesList.Add(classTemplate
+					.Replace("#STATE#", state)
+					.Replace("#BASE_CLASS#", baseClass));
 			}
 
-			return sb.ToString();
+			template = template.Replace("#STATE_CLASSES#", string.Join("\n\n", classesList));
+
+			return ApplyTemplate(template);
 		}
 	}
 }
