@@ -1,19 +1,22 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utility
-	{
+{
 	/// <summary>
 	/// A static service locator that provides a centralized registry for application services.
-	/// Allows registration, retrieval, and management of services by type and optional name.
+	/// Each (Type, name) key holds a stack of registrations. Lookups return the most recently
+	/// registered instance; removing a registration reveals the next-latest surviving one.
 	/// </summary>
 	public static class ServiceLocator
 	{
 		/// <summary>
-		/// Internal dictionary storing all registered services. The key is a tuple of (Type, name).
+		/// Internal store: each (Type, name) maps to a stack (List) of registered instances.
+		/// The last element is the active registration; earlier elements are shadowed.
 		/// </summary>
-		static readonly ConcurrentDictionary<(Type, string), object> _services = new();
+		static readonly ConcurrentDictionary<(Type, string), List<object>> _services = new();
 
 		[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
 		static void ResetStatics()
@@ -22,32 +25,25 @@ namespace Utility
 		}
 
 		/// <summary>
-		/// Registers a service instance for the specified type.
+		/// Registers a service instance for the specified type. Stacks on top of any existing
+		/// registrations for the same (Type, name); the new instance becomes the active one.
 		/// </summary>
-		/// <typeparam name="T">The type to register the service as</typeparam>
-		/// <param name="service">The service instance to register</param>
-		/// <param name="name">Optional name to distinguish between multiple services of the same type</param>
-		/// <exception cref="ArgumentNullException">Thrown when service is null</exception>
 		public static void Register<T>(T service, string name = null) where T : class
 		{
 			if (service == null) throw new ArgumentNullException(nameof(service));
 
 			var key = (typeof(T), name);
-			if (_services.ContainsKey(key))
-			{
-				Debug.LogWarning($"Service {typeof(T).Name}{(name != null ? $" ({name})" : "")} is being overwritten");
-			}
+			var stack = _services.GetOrAdd(key, _ => new List<object>());
 
-			_services[key] = service;
+			lock (stack)
+			{
+				stack.Add(service);
+			}
 		}
 
 		/// <summary>
-		/// Registers a service instance for a specific interface type.
+		/// Registers a service instance under a specific interface type.
 		/// </summary>
-		/// <typeparam name="TInterface">The interface type to register the service as</typeparam>
-		/// <typeparam name="TImplementation">The concrete implementation type of the service</typeparam>
-		/// <param name="service">The service instance to register</param>
-		/// <param name="name">Optional name to distinguish between multiple services of the same type</param>
 		public static void Register<TInterface, TImplementation>(TImplementation service, string name = null)
 			where TImplementation : class, TInterface
 			where TInterface : class
@@ -56,33 +52,44 @@ namespace Utility
 		}
 
 		/// <summary>
-		/// Retrieves a registered service of the specified type.
+		/// Retrieves the currently active service of the specified type.
+		/// Walks down the stack pruning dead UnityEngine.Object references.
 		/// </summary>
-		/// <typeparam name="T">The type of service to retrieve</typeparam>
-		/// <param name="name">Optional name of the service to retrieve</param>
-		/// <returns>The registered service instance</returns>
-		/// <exception cref="InvalidOperationException">Thrown when the requested service is not registered</exception>
+		/// <exception cref="InvalidOperationException">Thrown when no live service is registered.</exception>
 		public static T Get<T>(string name = null) where T : class
 		{
-			if (_services.TryGetValue((typeof(T), name), out var service))
-				return service as T;
+			if (TryGet<T>(out var service, name)) return service;
 
 			throw new InvalidOperationException($"Service of type {typeof(T).Name}{(name != null ? $" ({name})" : "")} not registered");
 		}
 
 		/// <summary>
-		/// Attempts to retrieve a registered service without throwing an exception if not found.
+		/// Attempts to retrieve the currently active service without throwing.
+		/// Walks down the stack pruning dead UnityEngine.Object references.
 		/// </summary>
-		/// <typeparam name="T">The type of service to retrieve</typeparam>
-		/// <param name="service">When this method returns, contains the service instance if found, or null if not found</param>
-		/// <param name="name">Optional name of the service to retrieve</param>
-		/// <returns>True if the service was found; otherwise, false</returns>
 		public static bool TryGet<T>(out T service, string name = null) where T : class
 		{
-			if (_services.TryGetValue((typeof(T), name), out var obj))
+			var key = (typeof(T), name);
+
+			if (_services.TryGetValue(key, out var stack))
 			{
-				service = obj as T;
-				return service != null;
+				lock (stack)
+				{
+					for (int i = stack.Count - 1; i >= 0; i--)
+					{
+						var candidate = stack[i];
+
+						// Prune dead UnityEngine.Object references.
+						if (candidate is UnityEngine.Object unityObj && unityObj == null)
+						{
+							stack.RemoveAt(i);
+							continue;
+						}
+
+						service = candidate as T;
+						if (service != null) return true;
+					}
+				}
 			}
 
 			service = default;
@@ -90,37 +97,65 @@ namespace Utility
 		}
 
 		/// <summary>
-		/// Checks if a service of the specified type is registered.
+		/// Checks if a live service of the specified type is currently registered.
 		/// </summary>
-		/// <typeparam name="T">The type of service to check for</typeparam>
-		/// <param name="name">Optional name of the service to check for</param>
-		/// <returns>True if the service is registered; otherwise, false</returns>
 		public static bool Has<T>(string name = null) where T : class
 		{
-			return _services.ContainsKey((typeof(T), name));
+			return TryGet<T>(out _, name);
 		}
 
 		/// <summary>
-		/// Unregisters a service of the specified type.
+		/// Removes a specific service instance from its registration stack by reference equality.
+		/// Underlying registrations (if any) remain and become active again.
 		/// </summary>
-		/// <typeparam name="T">The type of service to unregister</typeparam>
-		/// <param name="name">Optional name of the service to unregister</param>
-		public static void Unregister<T>(string name = null) where T : class
+		public static void Unregister<T>(T instance, string name = null) where T : class
 		{
-			_services.TryRemove((typeof(T), name), out _);
+			if (instance == null) return;
+			UnregisterInternal(typeof(T), name, instance);
+		}
+
+		/// <summary>
+		/// Non-generic instance-matched unregister used by ServiceBootstrap bookkeeping.
+		/// </summary>
+		internal static void UnregisterInternal(Type type, string name, object instance)
+		{
+			var key = (type, name);
+
+			if (!_services.TryGetValue(key, out var stack)) return;
+
+			lock (stack)
+			{
+				stack.Remove(instance);
+			}
 		}
 
 		/// <summary>
 		/// Clears all registered services and disposes any that implement IDisposable.
+		/// Each instance is disposed at most once even if registered under multiple keys.
 		/// </summary>
 		public static void Clear()
 		{
-			foreach (var service in _services.Values)
+			var disposed = new HashSet<object>(ReferenceComparer.Instance);
+
+			foreach (var stack in _services.Values)
 			{
-				if (service is IDisposable disposable)
-					disposable.Dispose();
+				lock (stack)
+				{
+					foreach (var service in stack)
+					{
+						if (service is IDisposable disposable && disposed.Add(service))
+							disposable.Dispose();
+					}
+				}
 			}
 			_services.Clear();
+		}
+
+		sealed class ReferenceComparer : IEqualityComparer<object>
+		{
+			public static readonly ReferenceComparer Instance = new();
+			public new bool Equals(object x, object y) => ReferenceEquals(x, y);
+			public int GetHashCode(object obj) => System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(obj);
 		}
 	}
 }
