@@ -19,6 +19,7 @@ namespace Utility
 	[DefaultExecutionOrder(-1000)]
 	public abstract class ServiceBootstrap : MonoBehaviour
 	{
+		[Tooltip("If enabled, this bootstrap survives scene loads (DontDestroyOnLoad). Only one global bootstrap may be active at a time; duplicates self-destruct on Awake.")]
 		[SerializeField] private bool isGlobal = false;
 
 		static ServiceBootstrap _globalInstance;
