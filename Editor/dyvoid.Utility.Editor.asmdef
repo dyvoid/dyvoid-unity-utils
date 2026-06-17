@@ -1,0 +1,19 @@
+{
+    "name": "dyvoid.Utility.Editor",
+    "rootNamespace": "dyvoid.Utility.Editor",
+    "references": [
+        "dyvoid.Utility.Runtime",
+        "com.unity.inputsystem"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
