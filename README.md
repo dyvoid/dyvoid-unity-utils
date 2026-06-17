@@ -1,4 +1,4 @@
-# dyvoid Utility
+# Dyvoid Unity Utilities
 
 A collection of Unity utilities as a UPM package.
 
@@ -11,10 +11,22 @@ A collection of Unity utilities as a UPM package.
 
 ## Installation
 
-Copy the package folder into your project's `Packages/` directory (name it `com.dyvoid.utility`), or add it to `Packages/manifest.json`:
+Open the Unity Package Manager (`Window > Package Manager`), click **+** and choose **Add package from git URL**:
+
+```
+https://github.com/dyvoid/dyvoid-unity-utils.git
+```
+
+Or add it directly to `Packages/manifest.json`:
 
 ```json
-"com.dyvoid.utility": "file:/absolute/path/to/package"
+"com.dyvoid.utility": "https://github.com/dyvoid/dyvoid-unity-utils.git"
+```
+
+To lock to a specific version, append a tag:
+
+```
+https://github.com/dyvoid/dyvoid-unity-utils.git#v1.0.0
 ```
 
 ---
