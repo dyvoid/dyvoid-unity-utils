@@ -57,9 +57,16 @@ namespace dyvoid.Utility.Tests
 
 		private static void CallStart(MonoBehaviour mb)
 		{
-			mb.GetType()
-				.GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
-				?.Invoke(mb, null);
+			try
+			{
+				mb.GetType()
+					.GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+					?.Invoke(mb, null);
+			}
+			catch (System.Reflection.TargetInvocationException e)
+			{
+				System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(e.InnerException).Throw();
+			}
 		}
 
 		// ── Initialization ─────────────────────────────────────────────────────
