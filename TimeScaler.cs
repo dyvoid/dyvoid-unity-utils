@@ -1,11 +1,9 @@
 #if UNITY_EDITOR
 using UnityEngine;
-#if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
-#endif
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// A utility class to manage and manipulate the time scale in Unity by pressing 0-9.
@@ -92,13 +90,7 @@ namespace Utility
 		private bool IsInputAllowed()
 		{
 			if (!requireLeftShift) return true;
-#if ENABLE_LEGACY_INPUT_MANAGER
-			return Input.GetKey(KeyCode.LeftShift);
-#elif ENABLE_INPUT_SYSTEM
 			return Keyboard.current.leftShiftKey.isPressed;
-#else
-			return false;
-#endif
 		}
 
 		/// <summary>
@@ -108,17 +100,7 @@ namespace Utility
 		{
 			bool checkTopRow = numberKeys != NumberKeys.Numpad;
 			bool checkNumpad = numberKeys != NumberKeys.TopRow;
-#if ENABLE_LEGACY_INPUT_MANAGER
-			for (int i = 0; i <= 9; i++)
-			{
-				if ((checkTopRow && Input.GetKeyDown(KeyCode.Alpha0 + i)) ||
-				    (checkNumpad && Input.GetKeyDown(KeyCode.Keypad0 + i)))
-				{
-					digit = i;
-					return true;
-				}
-			}
-#elif ENABLE_INPUT_SYSTEM
+
 			var kb = Keyboard.current;
 			if (kb == null) { digit = -1; return false; }
 			for (int i = 0; i <= 9; i++)
@@ -131,7 +113,7 @@ namespace Utility
 					return true;
 				}
 			}
-#endif
+
 			digit = -1;
 			return false;
 		}
@@ -139,17 +121,7 @@ namespace Utility
 		private bool IsPausePressed()
 		{
 			if (pauseKey == PauseKey.None) return false;
-#if ENABLE_LEGACY_INPUT_MANAGER
-			KeyCode key = pauseKey switch
-			{
-				PauseKey.P => KeyCode.P,
-				PauseKey.Escape => KeyCode.Escape,
-				PauseKey.Space => KeyCode.Space,
-				PauseKey.Pause => KeyCode.Pause,
-				_ => KeyCode.None
-			};
-			return Input.GetKeyDown(key);
-#elif ENABLE_INPUT_SYSTEM
+
 			var kb = Keyboard.current;
 			if (kb == null) return false;
 			KeyControl key = pauseKey switch
@@ -161,9 +133,6 @@ namespace Utility
 				_ => null
 			};
 			return key?.wasPressedThisFrame ?? false;
-#else
-			return false;
-#endif
 		}
 
 		/// <summary>
@@ -171,18 +140,6 @@ namespace Utility
 		/// </summary>
 		private bool TryGetStep(out int step)
 		{
-#if ENABLE_LEGACY_INPUT_MANAGER
-			if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
-			{
-				step = 1;
-				return true;
-			}
-			if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
-			{
-				step = -1;
-				return true;
-			}
-#elif ENABLE_INPUT_SYSTEM
 			var kb = Keyboard.current;
 			if (kb.equalsKey.wasPressedThisFrame || kb.numpadPlusKey.wasPressedThisFrame)
 			{
@@ -194,7 +151,7 @@ namespace Utility
 				step = -1;
 				return true;
 			}
-#endif
+
 			step = 0;
 			return false;
 		}

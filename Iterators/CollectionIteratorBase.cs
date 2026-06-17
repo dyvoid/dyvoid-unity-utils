@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Base class for collection iterators.

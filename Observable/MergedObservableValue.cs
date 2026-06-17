@@ -1,6 +1,6 @@
 using System;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// An <see cref="ObservableValue{T3}"/> whose value is derived from two source observables

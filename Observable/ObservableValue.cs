@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Represents a value that can be observed for changes.

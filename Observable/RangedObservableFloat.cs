@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	[Serializable]
 	public class RangedObservableFloat : ObservableFloat
@@ -84,10 +84,10 @@ namespace Utility
 }
 
 #if UNITY_EDITOR
-namespace Utility
+namespace dyvoid.Utility
 {
 	using UnityEngine;
-	using Range = Utility.ValueRange;
+	using Range = dyvoid.Utility.ValueRange;
 
 	[CustomPropertyDrawer(typeof(RangedObservableFloat))]
 	public class RangedObservableFloatDrawer : PropertyDrawer

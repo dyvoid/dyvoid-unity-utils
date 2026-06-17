@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	public class MomentumCalculator
 	{

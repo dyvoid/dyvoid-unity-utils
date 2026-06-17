@@ -6,7 +6,7 @@ using System.ComponentModel;
 using UnityEditor;
 #endif
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Base class for defining behaviors associated with specific states in a finite state machine (FSM).

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Defines a range with two boundary values. 
@@ -331,7 +331,7 @@ namespace Utility
 }
 
 #if UNITY_EDITOR
-namespace Utility
+namespace dyvoid.Utility
 {
 	using UnityEditor;
 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Returns items based on time intervals. Loops infinitely through the collection.

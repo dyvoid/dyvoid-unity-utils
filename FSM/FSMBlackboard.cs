@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// A shared data container for state behaviors that need access to common scene elements or data.

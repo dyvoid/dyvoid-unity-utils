@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Traverses forward then backward: 0, 1, 2, 3, 2, 1, 0, 1, 2, ...

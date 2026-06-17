@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Extension methods for MonoBehaviour to retrieve services from the ServiceLocator,

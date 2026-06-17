@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace Utility.Editor
+namespace dyvoid.Utility.Editor
 {
 	public class ScenePopulator : EditorWindow
 	{

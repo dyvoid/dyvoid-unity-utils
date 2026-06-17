@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	public enum IterationMode
 	{

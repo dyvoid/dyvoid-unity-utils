@@ -1,4 +1,4 @@
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Defines how to traverse a collection by providing the next index.

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	[Serializable]
 	public class ObservableFloat : ObservableValue<float>
@@ -13,7 +13,7 @@ namespace Utility
 }
 
 #if UNITY_EDITOR
-namespace Utility
+namespace dyvoid.Utility
 {
 	using UnityEditor;
 

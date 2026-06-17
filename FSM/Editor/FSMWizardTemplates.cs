@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Utility.Editor
+namespace dyvoid.Utility.Editor
 {
 	public static class FSMWizardTemplates
 	{
@@ -11,7 +11,7 @@ namespace Utility.Editor
 	}
 #NAMESPACE_END#";
 
-		public const string FSMClassTemplate = @"using Utility;
+		public const string FSMClassTemplate = @"using dyvoid.Utility;
 
 #NAMESPACE_START#
 	public class #FSM_NAME#FSM : FSM<#FSM_NAME#State>
@@ -19,7 +19,7 @@ namespace Utility.Editor
 	}
 #NAMESPACE_END#";
 
-		public const string BlackboardTemplate = @"using Utility;
+		public const string BlackboardTemplate = @"using dyvoid.Utility;
 
 #NAMESPACE_START#
 	public class #FSM_NAME#Blackboard : FSMBlackboard
@@ -28,7 +28,7 @@ namespace Utility.Editor
 	}
 #NAMESPACE_END#";
 
-		public const string VisibilityTemplate = @"using Utility;
+		public const string VisibilityTemplate = @"using dyvoid.Utility;
 using UnityEngine;
 
 #NAMESPACE_START#
@@ -43,7 +43,7 @@ using UnityEngine;
 	}
 #NAMESPACE_END#";
 
-		public const string StateBehaviourTemplate = @"using Utility;
+		public const string StateBehaviourTemplate = @"using dyvoid.Utility;
 
 #NAMESPACE_START#
 	public class #FSM_NAME##STATE#StateBehaviour : #BASE_CLASS#
@@ -64,7 +64,7 @@ using UnityEngine;
 	}
 #NAMESPACE_END#";
 
-		public const string AllStateBehavioursTemplate = @"using Utility;
+		public const string AllStateBehavioursTemplate = @"using dyvoid.Utility;
 
 #NAMESPACE_START#
 #STATE_CLASSES#

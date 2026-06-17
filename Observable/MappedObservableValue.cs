@@ -1,6 +1,6 @@
 using System;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// An <see cref="ObservableValue{TTo}"/> whose value is derived from a single source observable

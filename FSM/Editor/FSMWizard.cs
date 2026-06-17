@@ -5,7 +5,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-namespace Utility.Editor
+namespace dyvoid.Utility.Editor
 {
 	/// <summary>
 	/// Editor wizard for generating FSM boilerplate code.

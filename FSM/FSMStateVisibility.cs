@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Utility;
+using dyvoid.Utility;
 
-namespace Utility
+namespace dyvoid.Utility
 {
 	/// <summary>
 	/// Controls GameObject visibility based on enum state changes from any observable source.
