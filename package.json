@@ -1,11 +1,11 @@
 {
     "name": "com.dyvoid.utility",
     "version": "1.0.0",
-    "displayName": "Dyvoid Utility",
+    "displayName": "dyvoid utilities",
     "description": "A collection of Unity utilities including FSM, Observables, Service Locator, Iterators, and editor tools.",
     "unity": "2023.1",
     "author": {
-        "name": "Dyvoid"
+        "name": "dyvoid"
     },
     "dependencies": {
         "com.unity.inputsystem": "1.7.0"

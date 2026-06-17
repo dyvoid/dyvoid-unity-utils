@@ -3,9 +3,12 @@
     "rootNamespace": "dyvoid.Utility.Tests",
     "references": [
         "dyvoid.Utility.Runtime",
-        "UnityEngine.TestRunner"
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
