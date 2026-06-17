@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using System.Collections.Generic;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -10,102 +9,194 @@ namespace Utility
 {
 	/// <summary>
 	/// A utility class to manage and manipulate the time scale in Unity by pressing 0-9.
-	/// Press 'p' for pause.
+	/// Press '=' / '-' to step through scales, 'p' for pause.
 	/// </summary>
 	public class TimeScaler : MonoBehaviour
 	{
+		private const int DefaultScaleIndex = 5;
+
+		private static readonly float[] TimeScales =
+		{
+			0.0f, 0.01f, 0.1f, 0.25f, 0.5f, 1.0f, 2.0f, 5.0f, 10.0f, 25.0f
+		};
+
+		[Header("Keys")]
 		[SerializeField] private bool requireLeftShift = true;
-		[SerializeField] private bool useNumberKeys = true;
+		[SerializeField] private NumberKeys numberKeys = NumberKeys.Numpad;
+		[SerializeField] private PauseKey pauseKey = PauseKey.P;
+
+		[Header("Overlay")]
+		[SerializeField] private bool showOverlay = true;
+		[SerializeField] private float overlayDuration = 1.5f;
+		[SerializeField] private float overlayFadeDuration = 0.5f;
 
 		private float prevTimeScale = 1.0f;
 		private bool isPaused;
-		private Dictionary<int, float> _timeScaleMap;
-#if ENABLE_INPUT_SYSTEM
-		private KeyControl[] _digitKeys;
-		private KeyControl[] _numpadKeys;
-#endif
+		private int currentScaleIndex = DefaultScaleIndex;
+		private Cooldown overlayCooldown;
 
-		/// <summary>
-		/// Initializes the time scale map with predefined values.        
-		/// </summary>
 		private void Awake()
 		{
-			// Customize according to your needs
-			_timeScaleMap = new Dictionary<int, float>
-			{
-				{ 0, 0.0f },
-				{ 1, 0.01f },
-				{ 2, 0.1f },
-				{ 3, 0.25f },
-				{ 4, 0.5f },
-				{ 5, 1.0f },
-				{ 6, 2.0f },
-				{ 7, 5.0f },
-				{ 8, 10.0f },
-				{ 9, 25.0f }
-			};
+			overlayCooldown = new Cooldown(overlayDuration);
+			overlayCooldown.Reset(0f);
+		}
 
-#if ENABLE_INPUT_SYSTEM
-			var kb = Keyboard.current;
-			_digitKeys = new[]
+		private void OnDisable()
+		{
+			Time.timeScale = 1.0f;
+			isPaused = false;
+		}
+
+		private void Update()
+		{
+			overlayCooldown.UpdateTime(Time.unscaledDeltaTime);
+
+			if (!IsInputAllowed()) return;
+
+			if (TryGetPressedDigit(out int digit))
 			{
-				kb.digit0Key, kb.digit1Key, kb.digit2Key, kb.digit3Key, kb.digit4Key,
-				kb.digit5Key, kb.digit6Key, kb.digit7Key, kb.digit8Key, kb.digit9Key
-			};
-			_numpadKeys = new[]
+				currentScaleIndex = digit;
+				SetTimeScale(TimeScales[currentScaleIndex]);
+			}
+
+			if (TryGetStep(out int step))
 			{
-				kb.numpad0Key, kb.numpad1Key, kb.numpad2Key, kb.numpad3Key, kb.numpad4Key,
-				kb.numpad5Key, kb.numpad6Key, kb.numpad7Key, kb.numpad8Key, kb.numpad9Key
-			};
+				currentScaleIndex = Mathf.Clamp(currentScaleIndex + step, 0, TimeScales.Length - 1);
+				SetTimeScale(TimeScales[currentScaleIndex]);
+			}
+
+			if (IsPausePressed())
+			{
+				TogglePause();
+			}
+		}
+
+		private void OnGUI()
+		{
+			if (!showOverlay || overlayCooldown.HasExpired) return;
+
+			float alpha = overlayFadeDuration > 0f
+				? Mathf.Clamp01(overlayCooldown.TimeLeft / overlayFadeDuration)
+				: 1f;
+
+			Color baseColor = isPaused ? Color.yellow : Color.white;
+			GUI.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+			string label = isPaused ? "PAUSED" : $"{Time.timeScale:0.##}x";
+			GUI.Label(new Rect(10, 10, 120, 22), $"Time: {label}");
+			GUI.color = Color.white;
+		}
+
+		/// <summary>
+		/// Returns whether input should be processed this frame, based on the modifier requirement.
+		/// </summary>
+		private bool IsInputAllowed()
+		{
+			if (!requireLeftShift) return true;
+#if ENABLE_LEGACY_INPUT_MANAGER
+			return Input.GetKey(KeyCode.LeftShift);
+#elif ENABLE_INPUT_SYSTEM
+			return Keyboard.current.leftShiftKey.isPressed;
+#else
+			return false;
 #endif
 		}
 
 		/// <summary>
-		/// Updates the time scale based on input from the user.
+		/// Checks if any digit key (0-9) was pressed this frame.
 		/// </summary>
-		void Update()
+		private bool TryGetPressedDigit(out int digit)
 		{
+			bool checkTopRow = numberKeys != NumberKeys.Numpad;
+			bool checkNumpad = numberKeys != NumberKeys.TopRow;
 #if ENABLE_LEGACY_INPUT_MANAGER
-			if (!requireLeftShift || Input.GetKey(KeyCode.LeftShift))
+			for (int i = 0; i <= 9; i++)
 			{
-				// Check numpad keys 0-9 or regular number keys based on setting
-				for (int i = 0; i <= 9; i++)
+				if ((checkTopRow && Input.GetKeyDown(KeyCode.Alpha0 + i)) ||
+				    (checkNumpad && Input.GetKeyDown(KeyCode.Keypad0 + i)))
 				{
-					if ((useNumberKeys && Input.GetKeyDown(KeyCode.Alpha0 + i)) || 
-						(!useNumberKeys && Input.GetKeyDown(KeyCode.Keypad0 + i)))
-					{
-						SetTimeScale(_timeScaleMap[i]);
-						break;
-					}
-				}
-
-				// Handle pause toggle
-				if (Input.GetKeyDown(KeyCode.P))
-				{
-					TogglePause();
+					digit = i;
+					return true;
 				}
 			}
 #elif ENABLE_INPUT_SYSTEM
-			if (!requireLeftShift || Keyboard.current.leftShiftKey.isPressed)
+			var kb = Keyboard.current;
+			if (kb == null) { digit = -1; return false; }
+			for (int i = 0; i <= 9; i++)
 			{
-				KeyControl[] keys = useNumberKeys ? _digitKeys : _numpadKeys;
-
-				for (int i = 0; i < keys.Length; i++)
+				Key topRowKey = (i == 0) ? Key.Digit0 : (Key.Digit1 + (i - 1));
+				if ((checkTopRow && kb[topRowKey].wasPressedThisFrame) ||
+				    (checkNumpad && kb[Key.Numpad0 + i].wasPressedThisFrame))
 				{
-					if (keys[i].wasPressedThisFrame)
-					{
-						SetTimeScale(_timeScaleMap[i]);
-						break;
-					}
-				}
-
-				// Handle pause toggle
-				if (Keyboard.current.pKey.wasPressedThisFrame)
-				{
-					TogglePause();
+					digit = i;
+					return true;
 				}
 			}
 #endif
+			digit = -1;
+			return false;
+		}
+
+		private bool IsPausePressed()
+		{
+			if (pauseKey == PauseKey.None) return false;
+#if ENABLE_LEGACY_INPUT_MANAGER
+			KeyCode key = pauseKey switch
+			{
+				PauseKey.P => KeyCode.P,
+				PauseKey.Escape => KeyCode.Escape,
+				PauseKey.Space => KeyCode.Space,
+				PauseKey.Pause => KeyCode.Pause,
+				_ => KeyCode.None
+			};
+			return Input.GetKeyDown(key);
+#elif ENABLE_INPUT_SYSTEM
+			var kb = Keyboard.current;
+			if (kb == null) return false;
+			KeyControl key = pauseKey switch
+			{
+				PauseKey.P => kb.pKey,
+				PauseKey.Escape => kb.escapeKey,
+				PauseKey.Space => kb.spaceKey,
+				PauseKey.Pause => kb.pauseKey,
+				_ => null
+			};
+			return key?.wasPressedThisFrame ?? false;
+#else
+			return false;
+#endif
+		}
+
+		/// <summary>
+		/// Checks if a step key was pressed this frame ('=' or '+' for up, '-' for down).
+		/// </summary>
+		private bool TryGetStep(out int step)
+		{
+#if ENABLE_LEGACY_INPUT_MANAGER
+			if (Input.GetKeyDown(KeyCode.Equals) || Input.GetKeyDown(KeyCode.Plus) || Input.GetKeyDown(KeyCode.KeypadPlus))
+			{
+				step = 1;
+				return true;
+			}
+			if (Input.GetKeyDown(KeyCode.Minus) || Input.GetKeyDown(KeyCode.KeypadMinus))
+			{
+				step = -1;
+				return true;
+			}
+#elif ENABLE_INPUT_SYSTEM
+			var kb = Keyboard.current;
+			if (kb.equalsKey.wasPressedThisFrame || kb.numpadPlusKey.wasPressedThisFrame)
+			{
+				step = 1;
+				return true;
+			}
+			if (kb.minusKey.wasPressedThisFrame || kb.numpadMinusKey.wasPressedThisFrame)
+			{
+				step = -1;
+				return true;
+			}
+#endif
+			step = 0;
+			return false;
 		}
 
 		/// <summary>
@@ -120,6 +211,8 @@ namespace Utility
 			{
 				prevTimeScale = scale;
 			}
+
+			overlayCooldown.Reset();
 		}
 
 		/// <summary>
@@ -138,6 +231,24 @@ namespace Utility
 				Time.timeScale = 0.0f;
 				isPaused = true;
 			}
+
+			overlayCooldown.Reset();
+		}
+
+		public enum NumberKeys
+		{
+			Numpad,
+			TopRow,
+			Both
+		}
+
+		public enum PauseKey
+		{
+			None,
+			P,
+			Escape,
+			Space,
+			Pause
 		}
 	}
 }

@@ -43,15 +43,15 @@ namespace Utility
 		/// <summary>Gets the name of the state as a string.</summary>
 		public override string StateName => State.ToString();
 
-		private FSM<TState> __stateMachine;
+		private FSM<TState> _stateMachine;
 		/// <summary>Gets the FSM component that's attached to the same GameObject.</summary>
 		protected FSM<TState> stateMachine
 		{
 			get
 			{
 				// Lazy without using ??= due to issues with Unity's object lifecycle and serialization
-				if (__stateMachine == null) __stateMachine = GetComponent<FSM<TState>>();
-				return __stateMachine;
+				if (_stateMachine == null) _stateMachine = GetComponent<FSM<TState>>();
+				return _stateMachine;
 			}
 		}
 
