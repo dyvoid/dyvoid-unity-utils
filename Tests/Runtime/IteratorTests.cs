@@ -171,7 +171,7 @@ namespace dyvoid.Utility.Tests
 		public void CombinedIterator_NoCollections_Throws()
 		{
 			Assert.Throws<ArgumentException>(() =>
-				new CombinedIterator<int>());
+				new CombinedIterator<int>(new System.Collections.Generic.List<int>[0]));
 		}
 
 		// ── GroupedIterator ───────────────────────────────────────────────────

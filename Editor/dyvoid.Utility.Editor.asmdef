@@ -3,7 +3,7 @@
     "rootNamespace": "dyvoid.Utility.Editor",
     "references": [
         "dyvoid.Utility.Runtime",
-        "com.unity.inputsystem"
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
