@@ -64,7 +64,7 @@ fsm.PreviousState;
 fsm.StateObservable.Subscribe((newState, oldState) => { });
 ```
 
-**Editor tool:** `FSMWizard` generates FSM and state behaviour boilerplate from the Unity editor (`Tools > FSM Wizard`).
+**Editor tool:** `FSMWizard` generates FSM and state behaviour boilerplate from the Unity editor (`Tools > FSM > Create FSM...`).
 
 ---
 
@@ -161,6 +161,8 @@ var scaled  = range * 0.5f;   // (2.5, 7.5)
 ```
 
 Shows as a paired `From` / `To` field in the Inspector.
+
+> **Note:** `new ValueRange()` zero-initializes the struct to `(0, 0)` — use `ValueRange.Default` for the conventional `(0, 1)` range.
 
 ---
 

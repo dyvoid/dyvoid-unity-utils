@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using dyvoid.Utility;
 using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,6 +12,20 @@ namespace dyvoid.Utility
 	/// and associated behaviors. This FSM is designed to work with Unity's component system and MonoBehaviour lifecycle.
 	/// </summary>
 	/// <typeparam name="TState">The enum type that defines all possible states of the FSM</typeparam>
+	/// <remarks>
+	/// Behaviour notes:
+	/// <list type="bullet">
+	/// <item>State behaviours are gathered in <c>Start</c>, which also seeds the configured initial
+	/// state. A <see cref="ChangeState"/> call made before this FSM's <c>Start</c> has run (e.g. from
+	/// another component's <c>Awake</c> or an earlier <c>Start</c>) will not invoke behaviours and is
+	/// overwritten by the initial state.</item>
+	/// <item>Calling <see cref="ChangeState"/> with the current state is a no-op: states cannot be
+	/// re-entered, and <c>OnExit</c>/<c>OnEnter</c> will not fire again.</item>
+	/// <item>Avoid calling <see cref="ChangeState"/> from within <c>OnEnter</c>/<c>OnExit</c>: the
+	/// transition runs recursively before the outer one finishes, so notifications interleave. Prefer
+	/// transitioning from <c>OnUpdateState</c>.</item>
+	/// </list>
+	/// </remarks>
 	/// <example>
 	/// <code>
 	/// // 1. Define your states
@@ -105,7 +118,8 @@ namespace dyvoid.Utility
 		}
 
 		/// <summary>
-		/// Change to a new state.
+		/// Change to a new state. Changing to the current state is a no-op (no re-entry).
+		/// See the class remarks for lifecycle and re-entrancy caveats.
 		/// </summary>
 		/// <param name="newState">The state to change to</param>
 		public void ChangeState(TState newState)

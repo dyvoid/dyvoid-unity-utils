@@ -5,8 +5,9 @@ using System.Collections.Generic;
 namespace dyvoid.Utility
 {
 	/// <summary>
-	/// Chains multiple collections into a single iteration sequence.
-	/// Iterates through each collection in order.
+	/// Holds multiple infinite iterators and draws items from one of them at a time.
+	/// The active iterator never advances automatically; switch it explicitly with
+	/// <see cref="NextCollection"/> or <see cref="SetCollection"/>.
 	/// </summary>
 	/// <remarks>
 	/// Implements <see cref="IEnumerable{T}"/>. The enumerator yields <see cref="Next"/> from the current
@@ -18,9 +19,13 @@ namespace dyvoid.Utility
 		private int currentIteratorIndex = 0;
 
 		/// <summary>
-		/// Creates a combined iterator from multiple collections
+		/// Creates a combined iterator from multiple collections.
 		/// </summary>
-		/// <param name="collections">Collections to iterate through in sequence</param>
+		/// <remarks>
+		/// Empty collections are skipped, which shifts the indices used by
+		/// <see cref="SetCollection"/> relative to the constructor arguments.
+		/// </remarks>
+		/// <param name="collections">Collections to draw items from</param>
 		public CombinedIterator(params IList<T>[] collections)
 		{
 			if (collections.Length == 0)
@@ -65,7 +70,8 @@ namespace dyvoid.Utility
 		}
 
 		/// <summary>
-		/// Returns the next item in the sequence, moving to the next collection when needed
+		/// Returns the next item from the currently active collection.
+		/// The active collection only changes via <see cref="NextCollection"/> or <see cref="SetCollection"/>.
 		/// </summary>
 		/// <returns>The next item</returns>
 		public T Next()

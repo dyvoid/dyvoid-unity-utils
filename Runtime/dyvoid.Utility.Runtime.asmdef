@@ -1,7 +1,9 @@
 {
     "name": "dyvoid.Utility.Runtime",
     "rootNamespace": "dyvoid.Utility",
-    "references": [],
+    "references": [
+        "Unity.InputSystem"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

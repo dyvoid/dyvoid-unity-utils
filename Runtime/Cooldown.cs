@@ -62,7 +62,7 @@ namespace dyvoid.Utility
 		/// </summary>
 		/// <param name="minDuration"></param>
 		/// <param name="maxDuration"></param>
-		public void Reset(float minDuration, float maxDuration)
+		public void ResetRandom(float minDuration, float maxDuration)
 		{
 			this.TimeLeft = Random.Range(minDuration, maxDuration);
 		}
@@ -79,7 +79,8 @@ namespace dyvoid.Utility
 
 		private float GetOverflowCorrectedDuration(float duration)
 		{
-			if (TimeLeft >= 0) return duration;
+			// Repeat with a non-positive length yields NaN; nothing to correct against.
+			if (TimeLeft >= 0 || duration <= 0f) return duration;
 
 			float correctedDuration = Mathf.Repeat(TimeLeft, duration);
 
