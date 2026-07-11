@@ -10,10 +10,17 @@ namespace dyvoid.Utility
 	/// <remarks>
 	/// The boundary values do not have to be in lower/higher order,
 	/// since the range works with both ascending and descending values.
+	/// Note that <c>new ValueRange()</c> zero-initializes the struct to (0, 0);
+	/// use <see cref="Default"/> for the conventional (0, 1) range.
 	/// </remarks>
 	[Serializable]
 	public struct ValueRange : IEquatable<ValueRange>, IFormattable
 	{
+		/// <summary>
+		/// The conventional default range, from 0 to 1.
+		/// </summary>
+		public static ValueRange Default => new ValueRange(0f, 1f);
+
 		/// <summary>
 		/// The start boundary of the range.
 		/// </summary>
@@ -98,7 +105,7 @@ namespace dyvoid.Utility
 		/// </remarks>
 		/// <param name="from">The start boundary value</param>
 		/// <param name="to">The end boundary value</param>
-		public ValueRange(float from = 0.0f, float to = 1.0f)
+		public ValueRange(float from, float to)
 		{
 			From = from;
 			To = to;
@@ -356,10 +363,12 @@ namespace dyvoid.Utility
 
 				var fromProp = property.FindPropertyRelative("From");
 				var toProp = property.FindPropertyRelative("To");
+				var previousLabelWidth = EditorGUIUtility.labelWidth;
 				EditorGUIUtility.labelWidth = 36;
 				EditorGUI.PropertyField(fromRect, fromProp, new GUIContent("From:"));
 				EditorGUI.PropertyField(toRect, toProp, new GUIContent("To:"));
 
+				EditorGUIUtility.labelWidth = previousLabelWidth;
 				EditorGUI.indentLevel = previousIndentLevel;
 			}
 		}

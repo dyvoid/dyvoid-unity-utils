@@ -15,12 +15,20 @@ namespace dyvoid.Utility.Tests
 		}
 
 		[Test]
-		public void Constructor_Defaults_ZeroToZero()
+		public void ParameterlessNew_ZeroInitializes()
 		{
-			// Struct default init zero-initializes fields; constructor default parameters only apply when called explicitly
+			// Struct default init zero-initializes fields
 			var r = new ValueRange();
 			Assert.AreEqual(0f, r.From);
 			Assert.AreEqual(0f, r.To);
+		}
+
+		[Test]
+		public void Default_IsZeroToOne()
+		{
+			var r = ValueRange.Default;
+			Assert.AreEqual(0f, r.From);
+			Assert.AreEqual(1f, r.To);
 		}
 
 		[Test]

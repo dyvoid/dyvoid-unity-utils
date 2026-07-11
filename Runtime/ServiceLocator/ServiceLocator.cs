@@ -33,11 +33,21 @@ namespace dyvoid.Utility
 			if (service == null) throw new ArgumentNullException(nameof(service));
 
 			var key = (typeof(T), name);
-			var stack = _services.GetOrAdd(key, _ => new List<object>());
 
-			lock (stack)
+			while (true)
 			{
-				stack.Add(service);
+				var stack = _services.GetOrAdd(key, _ => new List<object>());
+
+				lock (stack)
+				{
+					// The stack may have been pruned from the dictionary between GetOrAdd
+					// and taking the lock; only add if it is still the registered stack.
+					if (_services.TryGetValue(key, out var current) && ReferenceEquals(current, stack))
+					{
+						stack.Add(service);
+						return;
+					}
+				}
 			}
 		}
 
@@ -89,6 +99,8 @@ namespace dyvoid.Utility
 						service = candidate as T;
 						if (service != null) return true;
 					}
+
+					PruneIfEmpty(key, stack);
 				}
 			}
 
@@ -126,7 +138,21 @@ namespace dyvoid.Utility
 			lock (stack)
 			{
 				stack.Remove(instance);
+				PruneIfEmpty(key, stack);
 			}
+		}
+
+		/// <summary>
+		/// Removes an emptied stack's dictionary entry so unused (Type, name) keys don't
+		/// accumulate. Must be called while holding the stack's lock; the conditional remove
+		/// only succeeds if the key still maps to this exact stack.
+		/// </summary>
+		static void PruneIfEmpty((Type, string) key, List<object> stack)
+		{
+			if (stack.Count != 0) return;
+
+			((ICollection<KeyValuePair<(Type, string), List<object>>>)_services)
+				.Remove(new KeyValuePair<(Type, string), List<object>>(key, stack));
 		}
 
 		/// <summary>

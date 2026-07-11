@@ -1,7 +1,8 @@
-#if UNITY_EDITOR
 using UnityEngine;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+#endif
 
 namespace dyvoid.Utility
 {
@@ -9,15 +10,15 @@ namespace dyvoid.Utility
 	/// A utility class to manage and manipulate the time scale in Unity by pressing 0-9.
 	/// Press '=' / '-' to step through scales, 'p' for pause.
 	/// </summary>
+	/// <remarks>
+	/// Only active in the editor and in development builds. In release builds the
+	/// component still exists (so scene references stay intact) but does nothing.
+	/// </remarks>
 	public class TimeScaler : MonoBehaviour
 	{
-		private const int DefaultScaleIndex = 5;
-
-		private static readonly float[] TimeScales =
-		{
-			0.0f, 0.01f, 0.1f, 0.25f, 0.5f, 1.0f, 2.0f, 5.0f, 10.0f, 25.0f
-		};
-
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+#pragma warning disable 0414 // Serialized fields are only read in the editor and development builds.
+#endif
 		[Header("Keys")]
 		[SerializeField] private bool requireLeftShift = true;
 		[SerializeField] private NumberKeys numberKeys = NumberKeys.Numpad;
@@ -27,6 +28,17 @@ namespace dyvoid.Utility
 		[SerializeField] private bool showOverlay = true;
 		[SerializeField] private float overlayDuration = 1.5f;
 		[SerializeField] private float overlayFadeDuration = 0.5f;
+#if !UNITY_EDITOR && !DEVELOPMENT_BUILD
+#pragma warning restore 0414
+#endif
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+		private const int DefaultScaleIndex = 5;
+
+		private static readonly float[] TimeScales =
+		{
+			0.0f, 0.01f, 0.1f, 0.25f, 0.5f, 1.0f, 2.0f, 5.0f, 10.0f, 25.0f
+		};
 
 		private float prevTimeScale = 1.0f;
 		private bool isPaused;
@@ -49,21 +61,22 @@ namespace dyvoid.Utility
 		{
 			overlayCooldown.UpdateTime(Time.unscaledDeltaTime);
 
-			if (!IsInputAllowed()) return;
+			var kb = Keyboard.current;
+			if (kb == null || !IsInputAllowed(kb)) return;
 
-			if (TryGetPressedDigit(out int digit))
+			if (TryGetPressedDigit(kb, out int digit))
 			{
 				currentScaleIndex = digit;
 				SetTimeScale(TimeScales[currentScaleIndex]);
 			}
 
-			if (TryGetStep(out int step))
+			if (TryGetStep(kb, out int step))
 			{
 				currentScaleIndex = Mathf.Clamp(currentScaleIndex + step, 0, TimeScales.Length - 1);
 				SetTimeScale(TimeScales[currentScaleIndex]);
 			}
 
-			if (IsPausePressed())
+			if (IsPausePressed(kb))
 			{
 				TogglePause();
 			}
@@ -87,22 +100,20 @@ namespace dyvoid.Utility
 		/// <summary>
 		/// Returns whether input should be processed this frame, based on the modifier requirement.
 		/// </summary>
-		private bool IsInputAllowed()
+		private bool IsInputAllowed(Keyboard kb)
 		{
 			if (!requireLeftShift) return true;
-			return Keyboard.current.leftShiftKey.isPressed;
+			return kb.leftShiftKey.isPressed;
 		}
 
 		/// <summary>
 		/// Checks if any digit key (0-9) was pressed this frame.
 		/// </summary>
-		private bool TryGetPressedDigit(out int digit)
+		private bool TryGetPressedDigit(Keyboard kb, out int digit)
 		{
 			bool checkTopRow = numberKeys != NumberKeys.Numpad;
 			bool checkNumpad = numberKeys != NumberKeys.TopRow;
 
-			var kb = Keyboard.current;
-			if (kb == null) { digit = -1; return false; }
 			for (int i = 0; i <= 9; i++)
 			{
 				Key topRowKey = (i == 0) ? Key.Digit0 : (Key.Digit1 + (i - 1));
@@ -118,12 +129,10 @@ namespace dyvoid.Utility
 			return false;
 		}
 
-		private bool IsPausePressed()
+		private bool IsPausePressed(Keyboard kb)
 		{
 			if (pauseKey == PauseKey.None) return false;
 
-			var kb = Keyboard.current;
-			if (kb == null) return false;
 			KeyControl key = pauseKey switch
 			{
 				PauseKey.P => kb.pKey,
@@ -138,9 +147,8 @@ namespace dyvoid.Utility
 		/// <summary>
 		/// Checks if a step key was pressed this frame ('=' or '+' for up, '-' for down).
 		/// </summary>
-		private bool TryGetStep(out int step)
+		private bool TryGetStep(Keyboard kb, out int step)
 		{
-			var kb = Keyboard.current;
 			if (kb.equalsKey.wasPressedThisFrame || kb.numpadPlusKey.wasPressedThisFrame)
 			{
 				step = 1;
@@ -191,6 +199,7 @@ namespace dyvoid.Utility
 
 			overlayCooldown.Reset();
 		}
+#endif
 
 		public enum NumberKeys
 		{
@@ -209,4 +218,3 @@ namespace dyvoid.Utility
 		}
 	}
 }
-#endif

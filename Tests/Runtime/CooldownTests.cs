@@ -104,12 +104,12 @@ namespace dyvoid.Utility.Tests
 		}
 
 		[Test]
-		public void Reset_RandomRange_ProducesValueInRange()
+		public void ResetRandom_ProducesValueInRange()
 		{
 			var cd = new Cooldown(1.0f);
 			for (int i = 0; i < 20; i++)
 			{
-				cd.Reset(0.5f, 2.0f);
+				cd.ResetRandom(0.5f, 2.0f);
 				Assert.GreaterOrEqual(cd.TimeLeft, 0.5f);
 				Assert.LessOrEqual(cd.TimeLeft, 2.0f);
 			}

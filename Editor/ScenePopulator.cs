@@ -189,11 +189,16 @@ namespace dyvoid.Utility.Editor
 
 		private static void ClearScene()
 		{
-			var existing = GameObject.Find(RootName);
+			// Scan the scene roots instead of GameObject.Find so inactive roots
+			// and duplicates are found as well.
+			var roots = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
 
-			if (existing != null)
+			foreach (var root in roots)
 			{
-				Undo.DestroyObjectImmediate(existing);
+				if (root.name == RootName)
+				{
+					Undo.DestroyObjectImmediate(root);
+				}
 			}
 		}
 

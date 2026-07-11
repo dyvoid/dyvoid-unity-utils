@@ -1,5 +1,4 @@
 using System;
-using UnityEditor;
 using UnityEngine;
 
 
@@ -8,7 +7,7 @@ namespace dyvoid.Utility
 	[Serializable]
 	public class RangedObservableFloat : ObservableFloat
 	{
-		[SerializeField] private ValueRange range = new ValueRange();
+		[SerializeField] private ValueRange range = ValueRange.Default;
 
 		public ValueRange Range => range;
 
@@ -86,8 +85,8 @@ namespace dyvoid.Utility
 #if UNITY_EDITOR
 namespace dyvoid.Utility
 {
+	using UnityEditor;
 	using UnityEngine;
-	using Range = dyvoid.Utility.ValueRange;
 
 	[CustomPropertyDrawer(typeof(RangedObservableFloat))]
 	public class RangedObservableFloatDrawer : PropertyDrawer
@@ -103,13 +102,14 @@ namespace dyvoid.Utility
 			var indent = EditorGUI.indentLevel;
 			EditorGUI.indentLevel = 0;
 
-			float lineHeight = 17f;
+			float lineHeight = EditorGUIUtility.singleLineHeight;
+			float spacing = EditorGUIUtility.standardVerticalSpacing;
 
 			// Calculate rects
 			var valueRect = new Rect(position.x, position.y, position.width, lineHeight);
-			var fromRect = new Rect(position.x, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
-			var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + 2, position.width * 0.5f, lineHeight);
-			var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + 2, position.width * 0.2f, lineHeight);
+			var fromRect = new Rect(position.x, position.y + lineHeight + spacing, position.width * 0.2f, lineHeight);
+			var rangeRect = new Rect(position.x + position.width * 0.25f, position.y + lineHeight + spacing, position.width * 0.5f, lineHeight);
+			var toRect = new Rect(position.x + position.width * 0.8f, position.y + lineHeight + spacing, position.width * 0.2f, lineHeight);
 
 			SerializedProperty valueProperty = property.FindPropertyRelative("value");
 			SerializedProperty fromProperty = property.FindPropertyRelative("range").FindPropertyRelative("From");
@@ -119,7 +119,12 @@ namespace dyvoid.Utility
 			EditorGUI.PropertyField(valueRect, valueProperty, GUIContent.none);
 
 			EditorGUI.PropertyField(fromRect, fromProperty, GUIContent.none);
-			valueProperty.floatValue = GUI.HorizontalSlider(rangeRect, valueProperty.floatValue, fromProperty.floatValue, toProperty.floatValue);
+			EditorGUI.BeginChangeCheck();
+			float sliderValue = GUI.HorizontalSlider(rangeRect, valueProperty.floatValue, fromProperty.floatValue, toProperty.floatValue);
+			if (EditorGUI.EndChangeCheck())
+			{
+				valueProperty.floatValue = sliderValue;
+			}
 			EditorGUI.PropertyField(toRect, toProperty, GUIContent.none);
 
 			// Set indent back to what it was
@@ -130,7 +135,7 @@ namespace dyvoid.Utility
 
 		public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
 		{
-			return 36.0f;
+			return EditorGUIUtility.singleLineHeight * 2 + EditorGUIUtility.standardVerticalSpacing;
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 namespace dyvoid.Utility
@@ -28,7 +27,7 @@ namespace dyvoid.Utility
 		/// Initializes a new instance of the <see cref="ObservableValue{T}"/> class.
 		/// </summary>
 		/// <param name="value">The initial value. This parameter is optional.</param>
-		public ObservableValue([Optional] T value)
+		public ObservableValue(T value = default)
 		{
 			this.value = value;
 		}
@@ -102,6 +101,8 @@ namespace dyvoid.Utility
 
 		/// <summary>
 		/// Subscribes a callback to be invoked when the <see cref="Value"/> changes.
+		/// Unlike C# events, subscribing the same callback twice is a no-op: each callback
+		/// is invoked at most once per change.
 		/// </summary>
 		/// <param name="callback">The action to invoke. The first parameter is the new value, the second is the old value.</param>
 		/// <param name="getInitialValue">If true, the callback is immediately invoked with the current value (passed as both new and old value).</param>
