@@ -277,5 +277,238 @@ namespace dyvoid.Utility.Tests
 			var iter = new TimedIterator<int>(new List<int>(), 1.0f);
 			Assert.Throws<InvalidOperationException>(() => iter.Next());
 		}
+
+		// ── Custom traversal strategy ─────────────────────────────────────────
+
+		private class ReverseStrategy : ITraversalStrategy
+		{
+			private int index = -1;
+
+			public int GetNextIndex(int collectionSize)
+			{
+				if (index < 0 || index >= collectionSize) index = collectionSize - 1;
+				return index--;
+			}
+		}
+
+		[Test]
+		public void InfiniteIterator_CustomStrategy_ControlsOrder()
+		{
+			var list = new List<int> { 1, 2, 3 };
+			var iter = new InfiniteIterator<int>(list, new ReverseStrategy());
+			var results = new List<int>();
+			for (int i = 0; i < 4; i++) results.Add(iter.Next());
+			CollectionAssert.AreEqual(new[] { 3, 2, 1, 3 }, results);
+		}
+
+		[Test]
+		public void InfiniteIterator_NullStrategy_Throws()
+		{
+			Assert.Throws<ArgumentNullException>(() =>
+				new InfiniteIterator<int>(new List<int> { 1 }, (ITraversalStrategy)null));
+		}
+
+		// ── WeightedRandomIterator ────────────────────────────────────────────
+
+		[Test]
+		public void WeightedRandom_ZeroWeightItems_NeverReturned()
+		{
+			var items = new List<string> { "never", "always", "nope" };
+			var weights = new List<float> { 0f, 1f, 0f };
+			var iter = new WeightedRandomIterator<string>(items, weights);
+
+			for (int i = 0; i < 50; i++)
+			{
+				Assert.AreEqual("always", iter.Next());
+			}
+		}
+
+		[Test]
+		public void WeightedRandom_AllPositiveWeights_EveryItemEventuallyReturned()
+		{
+			var items = new List<int> { 1, 2 };
+			var weights = new List<float> { 1f, 1f };
+			var iter = new WeightedRandomIterator<int>(items, weights);
+
+			var seen = new HashSet<int>();
+			for (int i = 0; i < 100; i++) seen.Add(iter.Next());
+			Assert.AreEqual(2, seen.Count);
+		}
+
+		[Test]
+		public void WeightedRandom_TupleConstructor_RespectsWeights()
+		{
+			var iter = new WeightedRandomIterator<string>(
+				new List<(string, float)> { ("a", 0f), ("b", 2f) });
+
+			for (int i = 0; i < 20; i++)
+			{
+				Assert.AreEqual("b", iter.Next());
+			}
+		}
+
+		[Test]
+		public void WeightedRandom_MismatchedCounts_Throws()
+		{
+			Assert.Throws<ArgumentException>(() =>
+				new WeightedRandomIterator<int>(new List<int> { 1, 2 }, new List<float> { 1f }));
+		}
+
+		[Test]
+		public void WeightedRandom_NegativeWeight_Throws()
+		{
+			Assert.Throws<ArgumentException>(() =>
+				new WeightedRandomIterator<int>(new List<int> { 1, 2 }, new List<float> { 1f, -1f }));
+		}
+
+		[Test]
+		public void WeightedRandom_AllZeroWeights_Throws()
+		{
+			Assert.Throws<ArgumentException>(() =>
+				new WeightedRandomIterator<int>(new List<int> { 1, 2 }, new List<float> { 0f, 0f }));
+		}
+
+		[Test]
+		public void WeightedRandom_WeightChangedToZero_StopsBeingReturned()
+		{
+			var items = new List<int> { 1, 2 };
+			var weights = new List<float> { 1f, 1f };
+			var iter = new WeightedRandomIterator<int>(items, weights);
+
+			weights[0] = 0f;
+			for (int i = 0; i < 20; i++)
+			{
+				Assert.AreEqual(2, iter.Next());
+			}
+		}
+
+		// ── LoopingIterator ───────────────────────────────────────────────────
+
+		[Test]
+		public void LoopingIterator_Sequential_ReturnsAllItemsPerLoop()
+		{
+			var list = new List<int> { 1, 2, 3 };
+			var iter = new LoopingIterator<int>(list, 2);
+			var results = new List<int>();
+			for (int i = 0; i < 6; i++) results.Add(iter.Next());
+			CollectionAssert.AreEqual(new[] { 1, 2, 3, 1, 2, 3 }, results);
+		}
+
+		[Test]
+		public void LoopingIterator_IsDone_AfterAllLoops()
+		{
+			var list = new List<int> { 1, 2 };
+			var iter = new LoopingIterator<int>(list, 1);
+			Assert.IsFalse(iter.IsDone);
+			iter.Next(); iter.Next();
+			Assert.IsTrue(iter.IsDone);
+		}
+
+		[Test]
+		public void LoopingIterator_Next_AfterDone_Throws()
+		{
+			var iter = new LoopingIterator<int>(new List<int> { 1 }, 1);
+			iter.Next();
+			Assert.Throws<InvalidOperationException>(() => iter.Next());
+		}
+
+		[Test]
+		public void LoopingIterator_LoopsCompleted_Increments()
+		{
+			var list = new List<int> { 1, 2 };
+			var iter = new LoopingIterator<int>(list, 3);
+			Assert.AreEqual(0, iter.LoopsCompleted);
+			iter.Next(); iter.Next();
+			Assert.AreEqual(1, iter.LoopsCompleted);
+			iter.Next(); iter.Next();
+			Assert.AreEqual(2, iter.LoopsCompleted);
+		}
+
+		[Test]
+		public void LoopingIterator_Enumerator_Terminates()
+		{
+			var list = new List<int> { 1, 2, 3 };
+			var iter = new LoopingIterator<int>(list, 2);
+			var all = iter.ToList();
+			Assert.AreEqual(6, all.Count);
+		}
+
+		[Test]
+		public void LoopingIterator_ZeroLoopCount_Throws()
+		{
+			Assert.Throws<ArgumentException>(() =>
+				new LoopingIterator<int>(new List<int> { 1 }, 0));
+		}
+
+		[Test]
+		public void LoopingIterator_EmptyList_Throws()
+		{
+			var iter = new LoopingIterator<int>(new List<int>(), 1);
+			Assert.Throws<InvalidOperationException>(() => iter.Next());
+		}
+
+		// ── FilteredIterator ──────────────────────────────────────────────────
+
+		[Test]
+		public void FilteredIterator_SkipsNonMatchingItems()
+		{
+			var list = new List<int> { 1, 2, 3, 4 };
+			var iter = new FilteredIterator<int>(list, x => x % 2 == 0);
+			Assert.AreEqual(2, iter.Next());
+			Assert.AreEqual(4, iter.Next());
+			Assert.AreEqual(2, iter.Next());
+		}
+
+		[Test]
+		public void FilteredIterator_NoMatch_NextThrows()
+		{
+			var list = new List<int> { 1, 3, 5 };
+			var iter = new FilteredIterator<int>(list, x => x % 2 == 0);
+			Assert.Throws<InvalidOperationException>(() => iter.Next());
+		}
+
+		[Test]
+		public void FilteredIterator_TryNext_ReturnsFalse_WhenNoMatch()
+		{
+			var list = new List<int> { 1, 3 };
+			var iter = new FilteredIterator<int>(list, x => x > 10);
+			Assert.IsFalse(iter.TryNext(out _));
+		}
+
+		[Test]
+		public void FilteredIterator_TryNext_ReturnsMatchingItem()
+		{
+			var list = new List<int> { 1, 20, 3 };
+			var iter = new FilteredIterator<int>(list, x => x > 10);
+			Assert.IsTrue(iter.TryNext(out int item));
+			Assert.AreEqual(20, item);
+		}
+
+		[Test]
+		public void FilteredIterator_PredicateChanges_AreReflected()
+		{
+			var alive = new HashSet<int> { 1, 2, 3 };
+			var list = new List<int> { 1, 2, 3 };
+			var iter = new FilteredIterator<int>(list, x => alive.Contains(x));
+
+			Assert.AreEqual(1, iter.Next());
+			alive.Remove(2);
+			Assert.AreEqual(3, iter.Next());
+		}
+
+		[Test]
+		public void FilteredIterator_NullPredicate_Throws()
+		{
+			Assert.Throws<ArgumentNullException>(() =>
+				new FilteredIterator<int>(new List<int> { 1 }, null));
+		}
+
+		[Test]
+		public void FilteredIterator_EmptyList_NextThrows_TryNextReturnsFalse()
+		{
+			var iter = new FilteredIterator<int>(new List<int>(), x => true);
+			Assert.Throws<InvalidOperationException>(() => iter.Next());
+			Assert.IsFalse(iter.TryNext(out _));
+		}
 	}
 }

@@ -4,6 +4,13 @@ All notable changes to this package are documented in this file.
 
 ## [Unreleased]
 
+### Added
+- `ITraversalStrategy` and the built-in strategies (`SequentialStrategy`, `PingPongStrategy`, `RandomStrategy`) are now public, and `InfiniteIterator`, `LoopingIterator`, and `FilteredIterator` accept a custom strategy, so custom traversal orders can be plugged in.
+- `WeightedRandomIterator<T>`: draws items with probability proportional to per-item weights; zero-weight items are never returned.
+- `LoopingIterator<T>`: iterates a collection a fixed number of times, exposes `IsDone`/`LoopsCompleted`, and its enumerator terminates (safe with `foreach`/LINQ without `Take(n)`).
+- `FilteredIterator<T>`: returns only items passing a predicate, with a non-throwing `TryNext(out item)` for when no match is an expected state.
+- `CollectionIteratorBase<T>.GetEnumerator` is now virtual so finite subclasses can provide terminating enumerators.
+
 ### Fixed
 - **Player builds no longer fail to compile**: removed an unguarded `using UnityEditor;` from `RangedObservableFloat.cs` in the runtime assembly.
 - `TimeScaler` no longer throws `NullReferenceException` when no keyboard device is present.

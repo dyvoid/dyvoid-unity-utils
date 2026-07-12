@@ -135,7 +135,35 @@ var sample = iter.Take(5).ToList();
 | `PingPong` | 0, 1, 2, 1, 0, 1, … |
 | `Random` | every index once per cycle, no consecutive repeats |
 
-**`CombinedIterator`** — chains multiple collections, switch with `NextCollection()`.  
+Custom traversal orders can be plugged in by implementing `ITraversalStrategy`:
+
+```csharp
+var iter = new InfiniteIterator<Sprite>(sprites, new MyCustomStrategy());
+```
+
+**`WeightedRandomIterator`** — draws items proportionally to per-item weights (loot tables, rare/common variation). Zero-weight items are never returned.
+
+```csharp
+var loot = new WeightedRandomIterator<Item>(
+    new List<(Item, float)> { (common, 80f), (rare, 19f), (legendary, 1f) });
+Item drop = loot.Next();
+```
+
+**`LoopingIterator`** — iterates the collection a fixed number of times, then stops (`IsDone`, terminating enumerator — safe with `foreach`/LINQ without `Take(n)`).
+
+```csharp
+var wave = new LoopingIterator<EnemyType>(enemyTypes, loopCount: 3);
+while (!wave.IsDone) Spawn(wave.Next());
+```
+
+**`FilteredIterator`** — returns only items passing a predicate; use `TryNext(out item)` when no match is an expected state.
+
+```csharp
+var targets = new FilteredIterator<Enemy>(enemies, e => e.IsAlive);
+if (targets.TryNext(out var enemy)) Attack(enemy);
+```
+
+**`CombinedIterator`** — holds multiple collections, switch with `NextCollection()`.  
 **`GroupedIterator`** — returns items in batches via `NextGroup(n)`.  
 **`TimedIterator`** — advances based on accumulated time, call `UpdateTime(deltaTime)` each frame.
 

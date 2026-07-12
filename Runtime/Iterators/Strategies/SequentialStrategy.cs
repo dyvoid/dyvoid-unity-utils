@@ -5,7 +5,8 @@ namespace dyvoid.Utility
 	/// <summary>
 	/// Traverses sequentially: 0, 1, 2, ..., N, 0, 1, 2, ...
 	/// </summary>
-	internal class SequentialStrategy : ITraversalStrategy
+	/// <remarks>Stateful; use one instance per iterator.</remarks>
+	public class SequentialStrategy : ITraversalStrategy
 	{
 		private int index = 0;
 
