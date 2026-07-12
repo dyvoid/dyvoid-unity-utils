@@ -185,18 +185,33 @@ void Update()
 
 ### MomentumCalculator
 
-Tracks the rate of accumulated input over a rolling time window.
+Tracks the rate of accumulated input over recent time. Two implementations
+share the `MomentumCalculator` base class:
+
+- `SlidingWindowMomentumCalculator` — hard cutoff: only samples within the
+  last `sampleTimeRange` seconds count, older ones are discarded entirely.
+  Use when "exactly the last N seconds" matters.
+- `ExponentialMomentumCalculator` — leaky integrator: each sample adds to the
+  momentum, which halves every `halfLife` seconds. Smoother and cheaper; old
+  input fades out gradually instead of being cut off.
 
 ```csharp
-var momentum = new MomentumCalculator(momentumThreshold: 5f, sampleTimeRange: 1f);
+MomentumCalculator momentum =
+    new SlidingWindowMomentumCalculator(momentumThreshold: 5f, sampleTimeRange: 1f);
+// or:
+MomentumCalculator momentum =
+    new ExponentialMomentumCalculator(momentumThreshold: 5f, halfLife: 1f);
 
 // Call with input values each frame/event
 bool thresholdExceeded = momentum.AddSample(inputValue);
 
-momentum.Momentum;          // current momentum value
+momentum.Momentum;          // current momentum value (decays over time by itself)
 momentum.ExceedsThreshold;  // true if >= threshold
 momentum.Clear();
 ```
+
+Both constructors accept an optional `timeProvider` (defaults to
+`Time.time`), useful for tests or for running on unscaled time.
 
 ---
 
