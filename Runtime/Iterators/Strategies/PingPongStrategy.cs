@@ -5,7 +5,8 @@ namespace dyvoid.Utility
 	/// <summary>
 	/// Traverses forward then backward: 0, 1, 2, 3, 2, 1, 0, 1, 2, ...
 	/// </summary>
-	internal class PingPongStrategy : ITraversalStrategy
+	/// <remarks>Stateful; use one instance per iterator.</remarks>
+	public class PingPongStrategy : ITraversalStrategy
 	{
 		private int index = 0;
 		private bool isMovingForward = true;

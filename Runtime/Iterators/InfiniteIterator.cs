@@ -28,6 +28,17 @@ namespace dyvoid.Utility
 			};
 		}
 
+		/// <summary>
+		/// Creates an infinite iterator with a custom traversal strategy.
+		/// </summary>
+		/// <param name="list">The collection to iterate over</param>
+		/// <param name="strategy">The traversal strategy that determines the iteration order.
+		/// Strategies are stateful; do not share one instance between iterators.</param>
+		public InfiniteIterator(IList<T> list, ITraversalStrategy strategy) : base(list)
+		{
+			this.strategy = strategy ?? throw new ArgumentNullException(nameof(strategy));
+		}
+
 		public override T Next()
 		{
 			if (list.Count == 0)

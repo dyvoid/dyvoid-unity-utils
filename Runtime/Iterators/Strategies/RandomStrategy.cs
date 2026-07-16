@@ -7,7 +7,8 @@ namespace dyvoid.Utility
 	/// Traverses in random order. Every index is returned once before reshuffling.
 	/// The same index will never be returned twice in a row.
 	/// </summary>
-	internal class RandomStrategy : ITraversalStrategy
+	/// <remarks>Stateful; use one instance per iterator.</remarks>
+	public class RandomStrategy : ITraversalStrategy
 	{
 		private readonly List<int> indices = new();
 		private int indicesIndex;
