@@ -1,8 +1,8 @@
 {
     "name": "com.dyvoid.utility",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "displayName": "dyvoid utilities",
-    "description": "A collection of Unity utilities including FSM, Observables, Service Locator, Iterators, and editor tools.",
+    "description": "A collection of Unity utilities including FSM, Observables, Service Locator, Iterators, MomentumCalculator, ValueRange, Cooldown, and editor tools.",
     "unity": "2023.1",
     "author": {
         "name": "dyvoid"
@@ -15,6 +15,9 @@
         "observable",
         "service-locator",
         "iterators",
+        "momentum",
+        "cooldown",
+        "value-range",
         "utility"
     ]
 }
