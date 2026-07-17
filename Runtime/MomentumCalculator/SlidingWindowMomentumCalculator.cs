@@ -18,8 +18,7 @@ namespace dyvoid.Utility
 		private float total = 0f;
 		private readonly Queue<MomentumSample> samples = new();
 
-		public SlidingWindowMomentumCalculator(float momentumThreshold, float sampleTimeRange = 1f, Func<float> timeProvider = null)
-			: base(momentumThreshold, timeProvider)
+		public SlidingWindowMomentumCalculator(float momentumThreshold, float sampleTimeRange = 1f, Func<float> timeProvider = null) : base(momentumThreshold, timeProvider)
 		{
 			this.sampleTimeRange = sampleTimeRange;
 		}
