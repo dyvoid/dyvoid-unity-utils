@@ -11,14 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/check_meta_files.py
+      - run: python3 .github/scripts/check_meta_files.py
 
   json-validate:
     name: Validate package.json and .asmdef files
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: python3 scripts/validate_json.py
+      - run: python3 .github/scripts/validate_json.py
 
   markdown-links:
     name: Check README links
