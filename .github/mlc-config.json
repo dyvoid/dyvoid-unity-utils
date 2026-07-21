@@ -1,0 +1,10 @@
+{
+  "ignorePatterns": [
+    {
+      "pattern": "^https://docs.unity3d.com"
+    }
+  ],
+  "retryOn429": true,
+  "retryCount": 3,
+  "timeout": "10s"
+}
