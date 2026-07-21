@@ -1,5 +1,7 @@
 # Dyvoid Unity Utilities
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A collection of Unity utilities as a UPM package.
 
 **Package name:** `com.dyvoid.utility`  
