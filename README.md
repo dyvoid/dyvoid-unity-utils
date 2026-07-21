@@ -1,5 +1,8 @@
 # Dyvoid Unity Utilities
 
+[![CI](https://github.com/dyvoid/dyvoid-unity-utils/actions/workflows/ci.yml/badge.svg)](https://github.com/dyvoid/dyvoid-unity-utils/actions/workflows/ci.yml)
+[![Version](https://img.shields.io/github/package-json/v/dyvoid/dyvoid-unity-utils)](package.json)
+[![Unity](https://img.shields.io/badge/Unity-2023.1%2B-black.svg?logo=unity)](https://unity.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A collection of Unity utilities as a UPM package.
