@@ -14,6 +14,14 @@ ASSET_ROOTS = ["Runtime", "Editor", "Tests"]
 IGNORED_SUFFIXES = {".meta"}
 
 
+def is_package_content(path: str) -> bool:
+    # Unity imports every file in the package except hidden ones (".github",
+    # ".gitignore"), so root-level files such as README.md need a .meta too.
+    if any(path == root or path.startswith(f"{root}/") or path == f"{root}.meta" for root in ASSET_ROOTS):
+        return True
+    return "/" not in path and not path.startswith(".")
+
+
 def tracked_paths() -> list[str]:
     result = subprocess.run(
         ["git", "ls-files"],
@@ -22,11 +30,7 @@ def tracked_paths() -> list[str]:
         text=True,
     )
     all_files = [line for line in result.stdout.splitlines() if line]
-    return [
-        f
-        for f in all_files
-        if any(f == root or f.startswith(f"{root}/") or f == f"{root}.meta" for root in ASSET_ROOTS)
-    ]
+    return [f for f in all_files if is_package_content(f)]
 
 
 def main() -> int:

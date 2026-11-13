@@ -4,6 +4,11 @@ All notable changes to this package are documented in this file.
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-13
+
+### Fixed
+- `README.md`, `CHANGELOG.md` and `LICENSE` now ship with `.meta` files. Unity treats a git package as immutable and logged a missing-meta error for each of them on every import.
+
 ## [1.1.0] - 2026-07-17
 
 ### Added
