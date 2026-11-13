@@ -31,7 +31,7 @@ Or add it directly to `Packages/manifest.json`:
 To lock to a specific version, append a tag:
 
 ```
-https://github.com/dyvoid/dyvoid-unity-utils.git#v1.0.0
+https://github.com/dyvoid/dyvoid-unity-utils.git#v1.1.1
 ```
 
 ---
