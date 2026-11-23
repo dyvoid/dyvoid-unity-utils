@@ -101,21 +101,22 @@ var canInteract = ObservableValue<bool>.Merge(isInRange, hasItem, (a, b) => a &&
 
 ### ServiceLocator
 
-A static service registry with stacking support. Later registrations shadow earlier ones; unregistering reveals the previous.
+A static service registry with stacking support. Later registrations shadow earlier ones; unregistering reveals the previous. Registrations are keyed by the type argument `T` (plus optional name), not the instance's runtime type, so `Register`, `Get` and `Unregister` must use the same `T`.
 
 ```csharp
 // Register
-ServiceLocator.Register<IInputService>(new InputService());
+var inputService = new InputService();
+ServiceLocator.Register<IInputService>(inputService);
 
 // Retrieve
 var input = ServiceLocator.Get<IInputService>();
 
 // Named registration
-ServiceLocator.Register(cameraService, "main");
+ServiceLocator.Register<ICameraService>(cameraService, "main");
 ServiceLocator.Get<ICameraService>("main");
 
-// Unregister
-ServiceLocator.Unregister(inputService);
+// Unregister: pass the same type (and name) it was registered under
+ServiceLocator.Unregister<IInputService>(inputService);
 ```
 
 Use `ServiceBootstrap` to bind services to a `MonoBehaviour` lifetime — bindings are automatically removed on `OnDestroy`. Toggle `isGlobal` to persist across scene loads.
